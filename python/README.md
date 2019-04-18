@@ -1,6 +1,6 @@
-#EmotiBit Biometric Library for Python
+# EmotiBit Biometric Library for Python
 
-##Easy Setup
+## Easy Setup
 * Setup Anaconda Python
   * See these helpful instructions - https://medium.com/@Shreedharvellay/anaconda-jupyter-spyder-things-you-need-to-know-3c808d824739
     * Briefly:
