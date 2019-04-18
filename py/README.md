@@ -8,3 +8,4 @@
 * Download or clone EmotiBit_Biometric_Lib to your computer
 * Open Anaconda Navigator and launch Spyder
 * Open Tools>PYTHONPATH manager and Add path to the EmotiBit_Biometric_Lib/py folder
+* Close and re-launch Spyder
