@@ -30,56 +30,59 @@ class TimeSeries:
         self.timestamp = []
         self.data = []
 
-#__filePath0 = ""
-#__timestampCol0 = 0
-#__dataCol0 = 1
-#__filePath1 = ""
-#__timestampCol1 = 0
-#__dataCol1 = 1
-#__outputPath = ""
+class CsvFileInfo:
+    file_dir = None
+    file_name = None
+    file_path = None
+    data_col = 1
+    timestamp_col = 0
+    data_start_row = 0
+    delimiter = ","
     
+    def __init__(self):
+        self.file_dir = None
+        self.file_name = None
+        self.file_path = None
+        self.data_col = 1
+        self.timestamp_col = 0
+        self.data_start_row = 0
+        self.delimiter = ","
+  
 class DataSyncer:
     
     time_series = []
+    csv_file_info = []
     
     def __init__(self):
         self.time_series = []
+        csv_file_info = []
         
     
     #class DataType(Enum):
     #    EMOTIBIT = 0
     #    FLEXCOMP_INFINITY = 1
     #    length = 2
-        
-    #def __init__(self, filePath0, timestampCol0, dataColumn0, filePath1, timestampCol1, dataColumn1, outputPath):
-    #    self.__filePath0 = filePath0
-    #    self.__timestampCol0 = timestampCol0
-    #    self.__dataColumn0 = dataColumn0
-    #    self.__filePath1 = filePath1
-    #    self.__timestampCol1 = timestampCol1
-    #    self.__dataColumn1 = dataColumn1
-    #    self.__outputPath = outputPath
-    
+           
     def load_data(self, file_dir, file_name, data_col, timestamp_col = 0, data_start_row = 0, delimiter = ","):
-        #global time_series
-        
-    #    if timestamp_col == None:
-    #        timestampCol = 0
-    #        print("Defaulting to timestamp_col = " + str(timestampCol))
-    #    if data_start_row == None:
-    #        data_start_row = 0
-    #        print("Defaulting to data_start_row = " + str(data_start_row))
-    #    if delimiter == None:
-    #        delimiter = ','
-    #        print("Defaulting to delimiter = " + str(delimiter))
-            
+        """Load data from csv file
+        """
+        file_path = file_dir + "/" + file_name
         last_index = len(self.time_series)
-        
         self.time_series.append(TimeSeries())
+        self.csv_file_info.append(CsvFileInfo())
+            
+        self.csv_file_info[last_index].file_dir = file_dir
+        self.csv_file_info[last_index].file_name = file_name
+        self.csv_file_info[last_index].file_path = file_path
+        self.csv_file_info[last_index].data_col = data_col
+        self.csv_file_info[last_index].timestamp_col = timestamp_col
+        self.csv_file_info[last_index].data_start_row = data_start_row
+        self.csv_file_info[last_index].delimiter = delimiter
+        
+        
         counter = 0
-        filePath = file_dir + "/" + file_name
-        print("Loading data into time_series[" + str(last_index) + "] from " + filePath)
-        with open(filePath, newline='') as csvfile:
+        print("Loading data into time_series[" + str(last_index) + "] from " + file_path)
+        with open(file_path, newline='') as csvfile:
              dataReader = csv.reader(csvfile, delimiter=delimiter, quotechar='|')
              for row in dataReader:
                  if(counter >= data_start_row and len(row) > timestamp_col and len(row) > data_col and not row[timestamp_col].isalpha()):
@@ -92,30 +95,39 @@ class DataSyncer:
                      print("**** Skipping row " + str(counter) + " ****")
                      print(row)
                  counter += 1
-    
-    #def load_data(fileDir, fileName, dataCol, timestampCol = None, dataStartRow = None, delimiter = None):
-    #    global data0
-    #    data0 = _load_data(fileDir, fileName, dataCol, timestampCol, dataStartRow, delimiter)
-    #    print("Data0.len = " + str(len(data0.data)))
-    #    print("Data1.len = " + str(len(data1.data)))
-    
-    #def load_data_1(fileDir, fileName, dataCol, timestampCol = None, dataStartRow = None, delimiter = None):
-    #    global data1
-    #    data1 = _load_data(fileDir, fileName, dataCol, timestampCol, dataStartRow, delimiter)
-    #    print("Data0.len = " + str(len(data0.data)))
-    #    print("Data1.len = " + str(len(data1.data)))
-    
-    def plot_timestamp_hist(self, nbins=20):
-        #global time_series
-        fig, axs = plt.subplots(nrows=1, ncols=len(self.time_series), tight_layout=True, num="Timestamp Histogram")
+        
+    def plot_timestamp_hist(self, nbins=100):
+        """Plot histograms of diff(timestamps)
+        """
+        #fig, axs = plt.subplots(nrows=1, ncols=len(self.time_series), num="Timestamp Histogram")
+        plt.close("Timestamp Histogram")
+        fig, axs = plt.subplots(nrows=1, ncols=len(self.time_series), num="Timestamp Histogram")
+        fig.set_size_inches([12, 4])
         if (len(self.time_series) > 1):
             for t in range(len(self.time_series)):
                 plt.sca(axs[t])
-                plt.cla
+                plt.cla()
                 axs[t].hist(numpy.diff(self.time_series[t].timestamp), nbins)
+                #print(self.csv_file_info[t].file_name + " col:" + str(self.csv_file_info[t].data_col))
+                axs[t].set_title(self.csv_file_info[t].file_name + " col:" + str(self.csv_file_info[t].data_col))
         else:
             plt.hist(numpy.diff(self.time_series[0].timestamp), nbins)
+            plt.title(self.csv_file_info[t].file_name + " col:" + str(self.csv_file_info[t].data_col))
+        fig.tight_layout()
     
+    def select_sync_times(self):
+        """Plots data to manually select sync times across data files
+        """
+        plt.close("Select Sync Times")
+        fig, axs = plt.subplots(nrows=len(self.time_series), ncols=1, num="Select Sync Times")
+        fig.set_size_inches([14, 7])
+        for t in range(len(self.time_series)):
+            plt.sca(axs[t])
+            plt.cla()
+            axs[t].plot(self.time_series[t].timestamp, self.time_series[t].data)
+            #print(self.csv_file_info[t].file_name + " col:" + str(self.csv_file_info[t].data_col))
+            axs[t].set_title(self.csv_file_info[t].file_name + " col:" + str(self.csv_file_info[t].data_col))
+        fig.tight_layout()
     
     def test(self):
         print("test worked yay")
