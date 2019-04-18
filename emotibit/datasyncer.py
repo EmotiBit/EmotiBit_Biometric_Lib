@@ -55,8 +55,7 @@ class DataSyncer:
     
     def __init__(self):
         self.time_series = []
-        csv_file_info = []
-        
+        self.csv_file_info = []        
     
     #class DataType(Enum):
     #    EMOTIBIT = 0
@@ -116,7 +115,7 @@ class DataSyncer:
         fig.tight_layout()
     
     def select_sync_times(self):
-        """Plots data to manually select sync times across data files
+        """Plot data to manually select sync times across data files
         """
         plt.close("Select Sync Times")
         fig, axs = plt.subplots(nrows=len(self.time_series), ncols=1, num="Select Sync Times")
