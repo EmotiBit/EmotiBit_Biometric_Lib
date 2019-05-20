@@ -12,6 +12,7 @@ __version__ = '0.0.1'
 import numpy
 import csv
 import matplotlib.pyplot as plt
+import locale
 #import pandas as pd
 #fileDir = "C:\priv\gd2\Dropbox\CFL\RiskSensor\Data_EmotiBit\Data EmotiBit vs Flexcomp\Pretest\Participant_0005\EmotiBit"
 #fileName = "2019-02-14_11-20-53-788.csv_PI.csv"
@@ -78,7 +79,9 @@ class DataSyncer:
         self.csv_file_info[last_index].data_start_row = data_start_row
         self.csv_file_info[last_index].delimiter = delimiter
         
-        
+        dialects = csv.list_dialects()
+        print("csv dialects:")
+        print(*dialects, "\n")
         counter = 0
         print("Loading data into time_series[" + str(last_index) + "] from " + file_path)
         with open(file_path, newline='') as csvfile:
@@ -86,8 +89,8 @@ class DataSyncer:
              for row in dataReader:
                  if(counter >= data_start_row and len(row) > timestamp_col and len(row) > data_col and not row[timestamp_col].isalpha()):
                      try:
-                         self.time_series[last_index].timestamp.append(float(row[timestamp_col]))
-                         self.time_series[last_index].data.append(float(row[data_col]))
+                         self.time_series[last_index].timestamp.append(locale.atof(row[timestamp_col]))
+                         self.time_series[last_index].data.append(locale.atof(row[data_col]))
                      except ValueError:
                          print(str(counter) + row[timestamp_col] + ", " + row[data_col])
                  else:                 

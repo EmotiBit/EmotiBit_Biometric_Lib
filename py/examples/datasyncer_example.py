@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 my_syncer = syncer.DataSyncer()
 
 # Load EmotiBit data
-file_dir0 = "C:/priv/gd2/Dropbox/CFL/RiskSensor/Data_EmotiBit/Data EmotiBit vs Flexcomp/Pretest/Participant_0001/23april pretests/23april pretests"
-file_name0 = "2019-04-23_13-44-09-391.csv_AY.csv"
+file_dir0 = "C:/priv/gd/Dropbox/CFL/RiskSensor/Data_EmotiBit/Validation study_PPG_EDA/Participant 0007/EmotiBit"
+file_name0 = "2019-05-10_09-11-40-723.csv_PI.csv"
 data_col0 = 6
 my_syncer.load_data(file_dir0, file_name0, data_col0)
 print("Data0.len = " + str(len(my_syncer.time_series[0].data)))
@@ -20,14 +20,19 @@ print("Data0.len = " + str(len(my_syncer.time_series[0].data)))
 FLEXCOMP_TIME = 0
 FLEXCOMP_EKG = 1
 FLEXCOMP_BVP = 2
-FLECCOMP_SC = 5
-file_dir1 = "C:/priv/gd2/Dropbox/CFL/RiskSensor/Data_EmotiBit/Data EmotiBit vs Flexcomp/Pretest/Participant_0001/23april pretests/23april pretests"
-file_name1 = "ID 0001_test_2019-04-23_1353_1354_form.csv"
+FLEXCOMP_SC = 5
+file_dir1 = "C:/priv/gd/Dropbox/CFL/RiskSensor/Data_EmotiBit/Validation study_PPG_EDA/Participant 0007/Flexcomp"
+file_name1 = "ID_0007_exp_10min_rest_2_2019-05-10_0938.txt"
 data_col1 = FLEXCOMP_BVP
 timestamp_col1 = FLEXCOMP_TIME
-data_start_row1 = 3
+data_start_row1 = 8
 delimiter1 = ';'
+#decimal = '.'
+import locale
+myLocale = locale.getlocale()
+locale.setlocale(locale.LC_NUMERIC, 'French_Canada.1252')
 my_syncer.load_data(file_dir1, file_name1, data_col1, timestamp_col1, data_start_row1, delimiter1)
+locale.setlocale(locale.LC_NUMERIC, myLocale)
 
 print("Data0.len = " + str(len(my_syncer.time_series[0].data)))
 print("Data1.len = " + str(len(my_syncer.time_series[1].data)))
