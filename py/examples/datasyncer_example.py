@@ -12,11 +12,16 @@ my_syncer = syncer.DataSyncer()
 
 # Load EmotiBit data
 file_dir0 = "C:/priv/gd/Dropbox/CFL/RiskSensor/Data_EmotiBit/Validation study_PPG_EDA/Participant 0007/EmotiBit"
-file_name0 = "2019-05-10_09-11-40-723.csv_PI.csv"
+file_base = "2019-05-10_09-25-54-211.csv_"
+file_ext = ".csv"
+data_types = ["PI", "PR"]
+file_names0 = []
+for data_type in data_types:
+    file_names0.append(file_base + data_type + file_ext)
 data_col0 = 6
 myLocale = locale.getlocale() # Store current locale
 locale.setlocale(locale.LC_NUMERIC, 'USA') # Switch to new locale to process file
-my_syncer.load_data(file_dir0, file_name0, data_col0)
+my_syncer.load_data(file_dir0, file_names0, data_col0)
 locale.setlocale(locale.LC_NUMERIC, myLocale) # Set locale back to orignal
 print("Data0.len = " + str(len(my_syncer.time_series[0].data)))
 
@@ -27,13 +32,13 @@ FLEXCOMP_BVP = 2
 FLEXCOMP_SC = 5
 file_dir1 = "C:/priv/gd/Dropbox/CFL/RiskSensor/Data_EmotiBit/Validation study_PPG_EDA/Participant 0007/Flexcomp"
 file_name1 = "ID_0007_exp_10min_rest_2_2019-05-10_0938.txt"
-data_col1 = FLEXCOMP_BVP
+data_cols1 = [FLEXCOMP_BVP, FLEXCOMP_EKG, FLEXCOMP_SC]
 timestamp_col1 = FLEXCOMP_TIME
 data_start_row1 = 8
 delimiter1 = ';'
 myLocale = locale.getlocale() # Store current locale
 locale.setlocale(locale.LC_NUMERIC, 'French_Canada.1252') # Switch to new locale to process file
-my_syncer.load_data(file_dir1, file_name1, data_col1, timestamp_col1, data_start_row1, delimiter1)
+my_syncer.load_data(file_dir1, file_name1, data_cols1, timestamp_col1, data_start_row1, delimiter1)
 locale.setlocale(locale.LC_NUMERIC, myLocale) # Set locale back to orignal
 
 print("Data0.len = " + str(len(my_syncer.time_series[0].data)))

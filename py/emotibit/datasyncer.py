@@ -63,40 +63,50 @@ class DataSyncer:
     #    FLEXCOMP_INFINITY = 1
     #    length = 2
            
-    def load_data(self, file_dir, file_name, data_col, timestamp_col = 0, data_start_row = 0, delimiter = ","):
+    def load_data(self, file_dirs, file_names, data_cols, timestamp_col = 0, data_start_row = 0, delimiter = ","):
         """Load data from csv file
         """
-        file_path = file_dir + "/" + file_name
-        last_index = len(self.time_series)
-        self.time_series.append(TimeSeries())
-        self.csv_file_info.append(CsvFileInfo())
-            
-        self.csv_file_info[last_index].file_dir = file_dir
-        self.csv_file_info[last_index].file_name = file_name
-        self.csv_file_info[last_index].file_path = file_path
-        self.csv_file_info[last_index].data_col = data_col
-        self.csv_file_info[last_index].timestamp_col = timestamp_col
-        self.csv_file_info[last_index].data_start_row = data_start_row
-        self.csv_file_info[last_index].delimiter = delimiter
-        
-        dialects = csv.list_dialects()
-        print("csv dialects:")
-        print(*dialects, "\n")
-        counter = 0
-        print("Loading data into time_series[" + str(last_index) + "] from " + file_path)
-        with open(file_path, newline='') as csvfile:
-             dataReader = csv.reader(csvfile, delimiter=delimiter, quotechar='|')
-             for row in dataReader:
-                 if(counter >= data_start_row and len(row) > timestamp_col and len(row) > data_col and not row[timestamp_col].isalpha()):
-                     try:
-                         self.time_series[last_index].timestamp.append(locale.atof(row[timestamp_col]))
-                         self.time_series[last_index].data.append(locale.atof(row[data_col]))
-                     except ValueError:
-                         print(str(counter) + row[timestamp_col] + ", " + row[data_col])
-                 else:                 
-                     print("**** Skipping row " + str(counter) + " ****")
-                     print(row)
-                 counter += 1
+        if not isinstance(file_dirs, list):
+            file_dirs = [file_dirs]
+        if not isinstance(file_names, list):
+            file_names = [file_names]
+        if not isinstance(data_cols, list):
+            data_cols = [data_cols]
+        for file_dir in file_dirs:    
+            for file_name in file_names:
+                file_path = file_dir + "/" + file_name
+                for data_col in data_cols:
+                    # ToDo: improve efficiency by parsing file once for all data_cols
+                    last_index = len(self.time_series)
+                    self.time_series.append(TimeSeries())
+                    self.csv_file_info.append(CsvFileInfo())
+                        
+                    self.csv_file_info[last_index].file_dir = file_dir
+                    self.csv_file_info[last_index].file_name = file_name
+                    self.csv_file_info[last_index].file_path = file_path
+                    self.csv_file_info[last_index].data_col = data_col
+                    self.csv_file_info[last_index].timestamp_col = timestamp_col
+                    self.csv_file_info[last_index].data_start_row = data_start_row
+                    self.csv_file_info[last_index].delimiter = delimiter
+                    
+                    dialects = csv.list_dialects()
+                    print("csv dialects:")
+                    print(*dialects, "\n")
+                    counter = 0
+                    print("Loading data into time_series[" + str(last_index) + "] from " + file_path)
+                    with open(file_path, newline='') as csvfile:
+                         dataReader = csv.reader(csvfile, delimiter=delimiter, quotechar='|')
+                         for row in dataReader:
+                             if(counter >= data_start_row and len(row) > timestamp_col and len(row) > data_col and not row[timestamp_col].isalpha()):
+                                 try:
+                                     self.time_series[last_index].timestamp.append(locale.atof(row[timestamp_col]))
+                                     self.time_series[last_index].data.append(locale.atof(row[data_col]))
+                                 except ValueError:
+                                     print(str(counter) + row[timestamp_col] + ", " + row[data_col])
+                             else:                 
+                                 print("**** Skipping row " + str(counter) + " ****")
+                                 print(row)
+                             counter += 1
         
     def plot_timestamp_hist(self, nbins=100):
         """Plot histograms of diff(timestamps)
