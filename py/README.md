@@ -12,5 +12,3 @@
   * Open Tools>Preferences>IPython console>Graphics>Backend>Automatic
     * [ToDo: insert screenshot]
 * Close and re-launch Spyder
-### Optional Settings
-* 
