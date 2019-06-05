@@ -9,13 +9,12 @@ import emotibit.datasyncer as syncer
 import matplotlib.pyplot as plt
 import locale
 import numpy
-import time
 import emotibit.flexcompparser as flexcomp
 my_syncer = syncer.DataSyncer()
 
 # Load EmotiBit data
 file_dir0 = "C:/priv/local/LocalDev/Sean/of_v0.9.8_vs_release/apps/CFL_SW_BiosensorModule/EmotiBitDataParser/Participant 00013/EmotiBit"
-file_base = "2019-05-24_14-25-39-507"
+file_base = "2019-05-24_14-51-51-078"
 file_ext = ".csv"
 data_types = ["PI"]
 file_names0 = []
@@ -40,7 +39,7 @@ FLEXCOMP_EKG = 1
 FLEXCOMP_BVP = 2
 FLEXCOMP_SC = 5
 file_dir1 = "C:/priv/local/LocalDev/Sean/of_v0.9.8_vs_release/apps/CFL_SW_BiosensorModule/EmotiBitDataParser/Participant 00013/Flex comp"
-file_name1 = "ID_00013_exp_10min_rest_1_2019-05-24_1437.txt"
+file_name1 = "ID_00013_exp_10min_tapi_1_2019-05-24_1503.txt"
 data_cols1 = [FLEXCOMP_BVP] #, FLEXCOMP_SC]
 timestamp_col1 = FLEXCOMP_TIME
 data_start_row1 = 8
