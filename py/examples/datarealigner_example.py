@@ -74,9 +74,20 @@ FLEXCOMP_SAMPLING_RATE = 256
 
 delay = my_realigner.get_delay_and_realign_data(SPLINE_START_TIME, SPLINE_STOP_TIME, MAX_DELAY, FLEXCOMP_SAMPLING_RATE)
 print(delay)
-
 plt.figure()
 plt.title('Realigned Data')
 plt.plot(my_realigner.timestamp[0],my_realigner.data[0],'g')
 plt.plot(my_realigner.timestamp[1],my_realigner.data[1],'y')
 plt.show()
+
+"""my_realigner.upsample_emo_at_flex();
+"""
+""" Save realigned and downsampled data in text file"""
+my_realigner.downsample_flex_at_emo();
+
+realigned_file_name =   "C:/Users/marie/Documents/Maîtrise/Emotibit/Test_Linda/realigned_data.txt";
+f= open(realigned_file_name,"w+")
+f.write('Timestamp, Flexcomp Data, Emotibit Data\n')
+for i in range(len(my_realigner.timestamp[0])):
+    print(my_realigner.timestamp[0][i], ',', my_realigner.data[0][i], ',', my_realigner.data[1][i], file=f)
+f.close() 

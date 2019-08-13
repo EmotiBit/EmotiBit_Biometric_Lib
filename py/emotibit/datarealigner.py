@@ -4,7 +4,7 @@ Created on Tue July 7 2019
 @author: Marie-Eve Bilodeau <marie-eve.bilodeau.1@etsmtl.net>
 """
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 
 import numpy as np
@@ -101,3 +101,30 @@ class DataRealigner:
         delay = self.get_delay(spline_start_time, spline_stop_time, max_delay, srate)
         self.realign_data(delay)
         return delay
+    
+    def upsample_emo_at_flex(self):
+        """
+            Upsample Emotibit Data at Flexcomp Timestamp
+        """
+        start = np.amax([self.timestamp[0][0],self.timestamp[1][0]])
+        stop = np.amin([self.timestamp[0][-1],self.timestamp[1][-1]])
+        self.timestamp[0], self.data[0], self.timestamp[1], self.data[1] = self.spline_subsections(start, stop)
+        
+    def downsample(self, start, stop):
+        """ Make a spline interpolation at x1 sampling rate on given subsection
+        """
+        
+        x0_new, y0_new = self.get_data_subsections(self.timestamp[0], self.data[0], start, stop)
+        x1_new, y1_new = self.get_data_subsections(self.timestamp[1], self.data[1], start, stop)
+        tck = interpolate.splrep(x0_new, y0_new, s=0)
+        x0_new = x1_new
+        y0_new = interpolate.splev(x0_new, tck, der=0)
+        return x0_new, y0_new, x1_new, y1_new
+            
+    def downsample_flex_at_emo(self):
+        """
+             Downsample Flexcomp Data at Emotibit Timestamp
+        """
+        start = np.amax([self.timestamp[0][0],self.timestamp[1][0]])
+        stop = np.amin([self.timestamp[0][-1],self.timestamp[1][-1]])
+        self.timestamp[0], self.data[0], self.timestamp[1], self.data[1] = self.downsample(start, stop)
