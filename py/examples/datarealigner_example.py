@@ -63,6 +63,9 @@ plt.figure()
 plt.title('Before Realignment')
 plt.plot(my_realigner.timestamp[0],my_realigner.data[0],'b')
 plt.plot(my_realigner.timestamp[1],my_realigner.data[1],'r')
+plt.gca().legend(('Flexcomp Data','Emotibit Data'))
+plt.xlabel('Data')
+plt.ylabel('Timestamp')
 plt.show()
 
 """ 1 minute works well for rest PPG data, for non-rest data take a longer section
@@ -78,10 +81,13 @@ plt.figure()
 plt.title('Realigned Data')
 plt.plot(my_realigner.timestamp[0],my_realigner.data[0],'g')
 plt.plot(my_realigner.timestamp[1],my_realigner.data[1],'y')
+plt.gca().legend(('Flexcomp Data','Emotibit Data'))
+plt.xlabel('Data')
+plt.ylabel('Timestamp')
 plt.show()
 
-"""my_realigner.upsample_emo_at_flex();
-"""
+# my_realigner.upsample_emo_at_flex();
+
 """ Save realigned and downsampled data in text file"""
 my_realigner.downsample_flex_at_emo();
 
@@ -91,3 +97,12 @@ f.write('Timestamp, Flexcomp Data, Emotibit Data\n')
 for i in range(len(my_realigner.timestamp[0])):
     print(my_realigner.timestamp[0][i], ',', my_realigner.data[0][i], ',', my_realigner.data[1][i], file=f)
 f.close() 
+
+plt.figure()
+plt.title('Realigned Data with Same Timestamp')
+plt.plot(my_realigner.timestamp[0],my_realigner.data[0],'b')
+plt.plot(my_realigner.timestamp[1],my_realigner.data[1],'r')
+plt.gca().legend(('Flexcomp Data','Emotibit Data'))
+plt.xlabel('Data')
+plt.ylabel('Timestamp')
+plt.show()
