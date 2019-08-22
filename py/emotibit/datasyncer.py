@@ -13,6 +13,7 @@ import numpy
 import csv
 import matplotlib.pyplot as plt
 import locale
+
 #import pandas as pd
 #fileDir = "C:\priv\gd2\Dropbox\CFL\RiskSensor\Data_EmotiBit\Data EmotiBit vs Flexcomp\Pretest\Participant_0005\EmotiBit"
 #fileName = "2019-02-14_11-20-53-788.csv_PI.csv"
@@ -98,11 +99,18 @@ class DataSyncer:
                          dataReader = csv.reader(csvfile, delimiter=delimiter, quotechar='|')
                          for row in dataReader:
                              if(counter >= data_start_row and len(row) > timestamp_col and len(row) > data_col and not row[timestamp_col].isalpha()):
-                                 try:
-                                     self.time_series[last_index].timestamp.append(locale.atof(row[timestamp_col]))
-                                     self.time_series[last_index].data.append(locale.atof(row[data_col]))
-                                 except ValueError:
-                                     print(str(counter) + row[timestamp_col] + ", " + row[data_col])
+                                if "UN" in file_path or "DC" in file_path or "DO" in file_path:
+                                    try:
+                                        self.time_series[last_index].timestamp.append(locale.atof(row[timestamp_col]))
+                                        self.time_series[last_index].data.append(row[data_col])
+                                    except ValueError:
+                                        print(str(counter) + row[timestamp_col] + ", " + row[data_col])
+                                else:
+                                    try:
+                                        self.time_series[last_index].timestamp.append(locale.atof(row[timestamp_col]))
+                                        self.time_series[last_index].data.append(locale.atof(row[data_col]))
+                                    except ValueError:
+                                        print(str(counter) + row[timestamp_col] + ", " + row[data_col])
                              else:                 
                                  print("**** Skipping row " + str(counter) + " ****")
                                  print(row)
