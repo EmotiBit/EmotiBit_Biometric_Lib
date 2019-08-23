@@ -31,8 +31,8 @@ file_base = "2019-08-02_18-42-37-748087_bike_ride"
 # file_dir0 = "/Users/nitin/GoogleDrive/MacBookPro/DocumentsRemote/CFLunpaid/Emotibit/dataAnalysis/ControlledTest/2019-08-22_17-09-06-681058/dataParsed"
 # file_base = "2019-08-22_17-09-06-681058"
 
-file_dir0 = "/Users/nitin/GoogleDrive/MacBookPro/DocumentsRemote/CFLunpaid/Emotibit/dataAnalysis/ControlledTest/2019-08-22_17-35-16-340558/dataParsed"
-file_base = "2019-08-22_17-35-16-340558"
+# file_dir0 = "/Users/nitin/GoogleDrive/MacBookPro/DocumentsRemote/CFLunpaid/Emotibit/dataAnalysis/ControlledTest/2019-08-22_17-35-16-340558/dataParsed"
+# file_base = "2019-08-22_17-35-16-340558"
 
 # arguments for command line
 # usernote_toggle False hide_dc EA,ER

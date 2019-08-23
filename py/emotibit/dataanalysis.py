@@ -13,11 +13,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import locale
 import os
-import random
 # import pandas as pd
-
-
-
 
 class DataAnalysis:
 
@@ -33,6 +29,7 @@ class DataAnalysis:
 
 	def __init__(self,file_dir,file_base, hide_dc_tags, usernote_toggle):
 
+		self.selected_axes = None
 		self.file_dir0 = file_dir
 		self.file_base = file_base
 		self.file_ext = ".csv"
@@ -114,13 +111,19 @@ class DataAnalysis:
 					print("Error: Unknown tag")
 
 		# generate the figure with subplots
-		self.fig, self.axes = plt.subplots(9, 2, sharex = True)
+		self.fig, self.axes = plt.subplots(nrows=9, ncols=2, sharex=True)
 
 		# add callbacks to the plot
-		self.axes[0,0].callbacks.connect('xlim_changed', self.on_xlims_change)
-		# self.cid = self.fig.canvas.mpl_connect('key_press_event', lambda evt, var=self.axes: self.hide_DC(evt, var))
-		self.cid = self.fig.canvas.mpl_connect('key_press_event', self.hide_DC)
 
+		for i in range(9):
+			for j in range(2):
+				self.axes[i, j].callbacks.connect('xlim_changed', self.on_xlims_change)
+
+		self.cid0 = self.fig.canvas.mpl_connect('button_press_event', self.on_mouse_click)
+		self.cid1 = self.fig.canvas.mpl_connect('key_press_event', self.hide_DC)
+
+		self.lines_DC = []
+		self.lines_UN = []
 		for j in range(2):# columns of subplot
 			for i in range(9):# rows in subplot
 				self.axes[i,j].plot(self.my_syncer.time_series[j*9+i].timestamp,self.my_syncer.time_series[j*9+i].data,linestyle = '-',zorder=10, alpha=0.9)
@@ -130,8 +133,8 @@ class DataAnalysis:
 				# axes[i,j].axvspan(points_UN[0],points_UN[1],facecolor = 'y',alpha = 0.5)
 				
 				# to mark DC
-				self.lines_DC = []
-				self.toggle_DC = True # displaying the lines
+
+				self.toggle_DC = True  # displaying the lines
 				for tag in self.markers["points_DC"].keys():
 					if tag not in hide_dc_tags:
 						plot_idx = (int(self.data_types.index(tag)%9),int(self.data_types.index(tag)/9))
@@ -140,9 +143,11 @@ class DataAnalysis:
 							self.lines_DC.append(line)
 
 				# to mark UN
+
 				if usernote_toggle:
 					for (point,note) in self.markers["points_UN"]:
-						self.axes[i,j].axvline(x=point, color='g', label="UN")
+						line = self.axes[i,j].axvline(x=point, color='g', label="UN")
+						self.lines_UN.append(line)
 						if (j*9+i == 0 or j*9+i == 9):
 							self.axes[i,j].text(point, self.axes[i, j].get_ylim()[1], note, fontsize=6, rotation=45)
 
@@ -158,21 +163,28 @@ class DataAnalysis:
 				self.fig.suptitle(self.file_base)
 
 		plt.show()
+
 	
 	def on_xlims_change(self, axes):
-		print("entered xlims change")
+		# print("entered xlims change")  # log to detect callback activation
 		new_xlim = axes.get_xlim()
-		if not axes.texts:
+		if not self.axes[0, 0].texts:
 			return
-		for text_left, text_right in zip(axes.texts, self.axes[0, 1].texts):
+		for text_left, text_right in zip(self.axes[0, 0].texts, self.axes[0, 1].texts):
 			if not (new_xlim[0] <= text_left.get_position()[0] <= new_xlim[1]):
 				text_left.set_visible(False)
 				text_right.set_visible(False)
 			else:
 				text_left.set_visible(True)
-				text_left.y = axes.get_ylim()[1]
+				text_left.y = self.axes[0, 0].get_ylim()[1]
 				text_right.set_visible(True)
 				text_right.y = self.axes[0, 1].get_ylim()[1]
+
+	def on_mouse_click(self, event):
+		print("mouse click detected")
+		if event.inaxes:
+			self.selected_axes = event.inaxes
+			# print(self.selected_axes.lines)
 
 	def hide_DC(self, event):
 		print("entered key press change")
@@ -180,9 +192,16 @@ class DataAnalysis:
 			# TODO: Fix the lines_DC visibility issue
 			self.toggle_DC = not self.toggle_DC
 			print("self.toggle_DC :	", self.toggle_DC)
+			# print(self.lines_DC)
+			# print(self.lines_UN)
+			# print()
 			for line in self.lines_DC:
-				line.set_visible(self.toggle_DC)
-				# line.remove()
+				if line in self.selected_axes.lines:
+					line.set_visible(self.toggle_DC)
+			plt.pause(0.005)
+			self.fig.canvas.draw()
+
+
 	# TODO: add functionality to scroll the plots.
 
 
