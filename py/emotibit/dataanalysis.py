@@ -184,12 +184,10 @@ class DataAnalysis:
 		print("mouse click detected")
 		if event.inaxes:
 			self.selected_axes = event.inaxes
-			# print(self.selected_axes.lines)
 
 	def hide_DC(self, event):
 		print("entered key press change")
 		if event.key == " ": # hide the markers
-			# TODO: Fix the lines_DC visibility issue
 			self.toggle_DC = not self.toggle_DC
 			print("self.toggle_DC :	", self.toggle_DC)
 			# print(self.lines_DC)
