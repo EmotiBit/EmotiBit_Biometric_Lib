@@ -17,11 +17,25 @@ import dataanalysis as dataanalysis
 # my_syncer = syncer.DataSyncer()
 
 # Load EmotiBit data - specify file name and path
-# Bike Ride
-file_dir0 = "/Users/nitin/GoogleDrive/MacBookPro/DocumentsRemote/CFLunpaid/Emotibit/dataAnalysis/BikeRide-data/2019-08-02_18-42-37-748087/dataParsed"
-file_base = "2019-08-02_18-42-37-748087_bike_ride"
 
-# controlled tests
+####### Bike Ride
+# file_dir0 = "/Users/nitin/GoogleDrive/MacBookPro/DocumentsRemote/CFLunpaid/Emotibit/dataAnalysis/BikeRide-data/2019-08-02_18-42-37-748087/dataParsed"
+# file_base = "2019-08-02_18-42-37-748087_bike_ride"
+
+# file_dir0 = "/Users/nitin/GoogleDrive/MacBookPro/DocumentsRemote/CFLunpaid/Emotibit/dataAnalysis/BikeRide-data/2019-08-07_18-27-36-662165/dataParsed"
+# file_base = "2019-08-07_18-27-36-662165_bike_ride"
+
+file_dir0 = "/Users/nitin/GoogleDrive/MacBookPro/DocumentsRemote/CFLunpaid/Emotibit/dataAnalysis/BikeRide-data/2019-08-08_08-57-51-136245/dataParsed"
+file_base = "2019-08-08_08-57-51-136245_bike"
+
+# file_dir0 = "/Users/nitin/GoogleDrive/MacBookPro/DocumentsRemote/CFLunpaid/Emotibit/dataAnalysis/BikeRide-data/2019-08-08_18-48-01-072150/dataParsed"
+# file_base = "2019-08-08_18-48-01-072150_bike"
+
+# file_dir0 = "/Users/nitin/GoogleDrive/MacBookPro/DocumentsRemote/CFLunpaid/Emotibit/dataAnalysis/BikeRide-data/2019-08-12_18-29-32-836054/dataParsed"
+# file_base = "2019-08-12_18-29-32-836054_bike"
+
+
+####### controlled tests
 # file_dir0 = "/Users/nitin/GoogleDrive/MacBookPro/DocumentsRemote/CFLunpaid/Emotibit/dataAnalysis/ControlledTest/2019-08-22_14-10-33-300661/dataParsed"
 # file_base = "2019-08-22_14-10-33-300661"
 
