@@ -3,7 +3,7 @@
 """
 Created on Thu Aug  8 12:34:23 2019
 
-@author: nitin
+@author: Nitin
 """
 import datasyncer as syncer
 
@@ -110,26 +110,41 @@ class DataAnalysis:
 		self.fig, self.axes = plt.subplots(nrows=9, ncols=2, sharex=True)
 
 		# code for widgets
-		plt.subplots_adjust(bottom=0.25, left=0.15)
-		axSlider = plt.axes([0.25, 0.15, 0.65, 0.03], facecolor='lightgoldenrodyellow')
-		self.slider = Slider(axSlider, 'data', 10, self.my_syncer.time_series[0].timestamp[-1] - 10, valinit=10)
-		self.slider.on_changed(self.slide_through_data)
+		plt.subplots_adjust(bottom=0.2, left=0.15)
 
-		self.sliderEnableToggle = False
-		axButton = plt.axes([0.1, 0.15, 0.1, 0.05])
-		self.sliderEnableButton = CheckButtons(axButton, labels=["Enable slider", ""], actives=[False])
-		self.sliderEnableButton.on_clicked(self.enable_slider)
+		# uncomment the following lines to enable slider
+		# axSlider = plt.axes([0.25, 0.15, 0.65, 0.03], facecolor='lightgoldenrodyellow')
+		# self.slider = Slider(axSlider, 'data', 10, self.my_syncer.time_series[0].timestamp[-1] - 10, valinit=10)
+		# self.slider.on_changed(self.slide_through_data)
 
-		self.indicator = self.fig.add_subplot(position=[0.25, 0.1, 0.65, 0.03])
-		self.indicator.set_ylabel("globalView", rotation="horizontal")
+		# self.sliderEnableToggle = False
+		# axButton = plt.axes([0.1, 0.15, 0.1, 0.05])
+		# self.sliderEnableButton = CheckButtons(axButton, labels=["Enable slider", ""], actives=[False])
+		# self.sliderEnableButton.on_clicked(self.enable_slider)
+
+		self.indicator = self.fig.add_subplot(position=[self.axes[8, 0].get_position().x0,
+															self.axes[8, 0].get_position().y0 - 0.075,
+															0.75, 0.015])
+		self.indicator.get_yaxis().set_visible(False)
+		# self.indicatorLeft.set_ylabel("Complete Time Series", rotation="horizontal")
 		self.indicator.set_xlim(
 			[self.my_syncer.time_series[0].timestamp[0], self.my_syncer.time_series[0].timestamp[-1]])
+
+		# self.indicatorRight = self.fig.add_subplot(position=[self.axes[8, 1].get_position().x0,
+		# 													self.axes[8, 1].get_position().y0 - 0.075,
+		# 													0.34, 0.015])
+		# self.indicatorRight.get_yaxis().set_visible(False)
+		# # self.indicatorLeft.set_ylabel("Complete Time Series", rotation="horizontal")
+		# self.indicatorRight.set_xlim(
+		# 	[self.my_syncer.time_series[0].timestamp[0], self.my_syncer.time_series[0].timestamp[-1]])
 
 		# add callbacks to the plot
 		for i in range(9):
 			for j in range(2):
 				self.axes[i, j].callbacks.connect('xlim_changed', self.on_xlims_change)
 		self.selected_axes = None
+		self.selected_time = None
+		self.temp_highlights = []  # stores the axvspan used to temporarily highlight the cursor
 		self.cid0 = self.fig.canvas.mpl_connect('button_press_event', self.on_mouse_click)
 		self.cid1 = self.fig.canvas.mpl_connect('key_press_event', self.on_key_press)
 
@@ -153,7 +168,7 @@ class DataAnalysis:
 											self.my_syncer.time_series[j * 9 + i].data, linestyle='-', zorder=10,
 											alpha=0.9)
 				self.lines_data.append(line)
-				self.axes[i, j].autoscale(enable=True, axis='y')
+				self.axes[i, j].autoscale(enable=True, axis='y', tight=True)
 
 				# to draw background color
 				# axes[i,j].axvspan(points_UN[0],points_UN[1],facecolor = 'y',alpha = 0.5)
@@ -201,13 +216,6 @@ class DataAnalysis:
 		self.fig.suptitle(self.file_base)
 
 
-
-	def update_markers(self):
-		"""
-		Functionn to mark all additional points based on the current subplots x limits
-		:return: None
-		"""
-
 	def on_xlims_change(self, axes):
 		"""
 		Function used to set the visibility of user note tags when zooming in on the plots.
@@ -233,6 +241,11 @@ class DataAnalysis:
 		self.indicator.set_xlim(self.my_syncer.time_series[0].timestamp[0], self.my_syncer.time_series[0].timestamp[-1])
 		self.indicator.axvspan(new_xlim[0], new_xlim[1], facecolor="g")
 
+		# self.indicatorRight.clear()
+		# self.indicatorRight.set_xlim(self.my_syncer.time_series[0].timestamp[0],
+		# 							self.my_syncer.time_series[0].timestamp[-1])
+		# self.indicatorRight.axvspan(new_xlim[0], new_xlim[1], facecolor="g")
+
 	def on_mouse_click(self, event):
 		"""
 		Function used to update the instance variable:selected_axes which is then used by the
@@ -243,6 +256,14 @@ class DataAnalysis:
 		print("mouse click detected")
 		if event.inaxes:
 			self.selected_axes = event.inaxes
+			self.selected_time = event.xdata
+		else:
+			if len(self.temp_highlights):
+				for highlight in self.temp_highlights:
+					highlight.remove()
+				self.temp_highlights = []
+				self.fig.canvas.draw()
+
 
 	def on_key_press(self, event):
 		"""
@@ -267,6 +288,25 @@ class DataAnalysis:
 			if self.sliderEnableToggle:
 				if self.slider.val - 10 >= self.my_syncer.time_series[0].timestamp[0] + 10:
 					self.slider.set_val(self.slider.val - 10)
+		elif event.key == "m":
+			if not len(self.temp_highlights):  # if the length == 0
+				for j in range(2):
+					for i in range(9):
+						# TODO: change the hardcoded width of window
+						highlight = self.axes[i, j].axvspan(self.selected_time - 5, self.selected_time + 5, facecolor='y', alpha=0.5)
+						self.temp_highlights.append(highlight)
+				self.fig.canvas.draw()
+
+		elif event.key == "a":
+			new_xlim = self.axes[0, 0].get_xlim()
+			for j in range(2):
+				for i in range(9):
+					x_low_index = int((new_xlim[0]/self.my_syncer.time_series[j * 9 + i].timestamp[-1]) * len(self.my_syncer.time_series[j * 9 + i].timestamp)) - 1
+					x_high_index = int((new_xlim[1]/self.my_syncer.time_series[j * 9 + i].timestamp[-1]) * len(self.my_syncer.time_series[j * 9 + i].timestamp)) - 1
+					new_ymin = min(self.my_syncer.time_series[j * 9 + i].data[x_low_index: x_high_index])
+					new_ymax = max(self.my_syncer.time_series[j * 9 + i].data[x_low_index: x_high_index])
+					self.axes[i, j].set_ylim([new_ymin, new_ymax])
+			self.fig.canvas.draw()
 
 	@staticmethod
 	def take_closest(myList, myNumber):
