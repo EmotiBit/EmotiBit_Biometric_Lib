@@ -1,10 +1,13 @@
 # Emotibit_Biometric_Lib
 Biometric library for processing EmotiBit data
 ## Data Analyser
- - added on September 6 2019
+
+
 The Data Analyzer is tool which can be used for visualizing the data stored on the SD-Card. It can produce a simultaneous view of 18 channel sensor data, which can be viewed interactively. The timeline indicator at the bottom is useful for checking the segment of data currently on the plots.
-Note: Sample data has been provided. You should be able to visualize the data just by clicking `Run` button in spyder.
-Note: In the PYTHONPATH manager, add the path to the `emotibit` folder under the `py` folder you just downloaded or cloned. You can find the PYTHONPATH manager under the `python` menu in mac-os.
+
+**Note:** Sample data has been provided. You should be able to visualize the data just by clicking `Run` button in spyder.
+
+**Note:** In the PYTHONPATH manager, add the path to the `emotibit` folder under the `py` folder you just downloaded or cloned. You can find the PYTHONPATH manager under the `python` menu in mac-os.
 ### Steps to load data
  - Open the `dataAnalysis.py` example under the `py/Examples` folder in Spyder.
  - Specify the path to the folder containing the parsed data(The output of the data parser), inside the double quotes of the _variable_ **file_dir0**.
