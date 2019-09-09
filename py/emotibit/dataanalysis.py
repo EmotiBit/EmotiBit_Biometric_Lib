@@ -122,9 +122,25 @@ class DataAnalysis:
 		# self.sliderEnableButton = CheckButtons(axButton, labels=["Enable slider", ""], actives=[False])
 		# self.sliderEnableButton.on_clicked(self.enable_slider)
 
+		self.TextAxesLeft = self.fig.add_subplot(position=[self.axes[0, 0].get_position().x0,
+														   self.axes[0, 0].get_position().y1,
+														   self.axes[0, 0].get_position().x1-self.axes[0, 0].get_position().x0,
+														   0.001],sharex=self.axes[0, 0])
+		self.TextAxesLeft.set_xlim([self.my_syncer.time_series[0].timestamp[0], self.my_syncer.time_series[0].timestamp[-1]])
+		self.TextAxesLeft.get_xaxis().set_visible(False)
+		self.TextAxesLeft.get_yaxis().set_visible(False)
+
+
+		self.TextAxesRight = self.fig.add_subplot(position=[self.axes[0, 1].get_position().x0,
+														   self.axes[0, 1].get_position().y1,
+														   self.axes[0, 1].get_position().x1 - self.axes[0, 1].get_position().x0,
+														   0.001], sharex=self.axes[0, 0])
+		self.TextAxesRight.set_xlim([self.my_syncer.time_series[0].timestamp[0], self.my_syncer.time_series[0].timestamp[-1]])
+		self.TextAxesRight.get_xaxis().set_visible(False)
+		self.TextAxesRight.get_yaxis().set_visible(False)
+
 		self.indicator = self.fig.add_subplot(position=[self.axes[8, 0].get_position().x0,
-															self.axes[8, 0].get_position().y0 - 0.075,
-															0.75, 0.015])
+															self.axes[8, 0].get_position().y0 - 0.075, 0.75, 0.015])
 		self.indicator.get_yaxis().set_visible(False)
 		# self.indicatorLeft.set_ylabel("Complete Time Series", rotation="horizontal")
 		self.indicator.set_xlim(
@@ -160,7 +176,7 @@ class DataAnalysis:
 		self.lines_data = []
 		self.lines_DC = []
 		self.lines_DO = []
-		self.lines_UN = []
+		self.lines_UN = []  # used for the slider
 
 		for j in range(2):  # columns of subplot
 			for i in range(9):  # rows in subplot
@@ -192,28 +208,44 @@ class DataAnalysis:
 				if self.cmd_usernote_toggle:
 					for (point, note) in self.markers["points_UN"]:
 						line = self.axes[i, j].axvline(x=point, color='g', label="UN")
-						if j * 9 + i == 0 or j * 9 + i == 9:
-							txt = self.axes[i, j].text(point, self.axes[i, j].get_ylim()[1], note, fontsize=6,
-													   rotation=45)
-							self.lines_UN.append((line, txt))
-						else:
-							self.lines_UN.append(line)
+						self.lines_UN.append(line)
 
 				# to add the signal tag on the y-axis
 				self.axes[i, j].set_ylabel(self.data_types[j * 9 + i])
+
+		# to mark UN text on Text axes
+		for (point, note) in self.markers["points_UN"]:
+			self.TextAxesLeft.text(point, 1, note, fontsize=6, rotation=45)
+			self.TextAxesRight.text(point, 1, note, fontsize=6, rotation=45)
 
 		# to mark DC
 		for tag in self.markers["points_DC"].keys():
 			if tag not in self.cmd_hide_dc_tags:
 				plot_idx = (int(self.data_types.index(tag) % 9), int(self.data_types.index(tag) / 9))
 				for point in self.markers["points_DC"][tag]:  # for every point in the list
-					line = self.axes[plot_idx[0], plot_idx[1]].axvline(x=point, color='r', label="DC", zorder=1,
-																	   lw=0.75)
+					line = self.axes[plot_idx[0], plot_idx[1]].axvline(x=point, color='r', label="DC", zorder=1, lw=0.75)
 					self.lines_DC.append(line)
 
 		# to add the legend
-		plt.figlegend(labels=("Data", "DC", "UN"), loc='lower center', ncol=5, labelspacing=0.)
+		plt.figlegend((self.lines_data[0], self.lines_DC[0], self.lines_UN[0]), labels=("Data", "DC", "UN"), loc='lower center', ncol=3, labelspacing=0.)
 		self.fig.suptitle(self.file_base)
+
+
+	def updateUN(self, new_xlim=(0, 0)):
+		"""
+		Function to update the User notes displayed on the top of the subplots
+		:param new_xlim: limits of the x axis in the current plot
+		:return: None
+		"""
+		if not self.TextAxesLeft.texts:
+			return
+		for text_left, text_right in zip(self.TextAxesLeft.texts, self.TextAxesRight.texts):
+			if not (new_xlim[0] <= text_left.get_position()[0] <= new_xlim[1]):
+				text_left.set_visible(False)
+				text_right.set_visible(False)
+			else:
+				text_left.set_visible(True)
+				text_right.set_visible(True)
 
 
 	def on_xlims_change(self, axes):
@@ -223,28 +255,11 @@ class DataAnalysis:
 		:param axes: axes where the xlims were changed
 		:return: None
 		"""
-		# print("entered xlims change")  # log to detect callback activation
-		new_xlim = axes.get_xlim()
-		if not self.axes[0, 0].texts:
-			return
-		for text_left, text_right in zip(self.axes[0, 0].texts, self.axes[0, 1].texts):
-			if not (new_xlim[0] <= text_left.get_position()[0] <= new_xlim[1]):
-				text_left.set_visible(False)
-				text_right.set_visible(False)
-			else:
-				text_left.set_visible(True)
-				text_left.y = self.axes[0, 0].get_ylim()[1]
-				text_right.set_visible(True)
-				text_right.y = self.axes[0, 1].get_ylim()[1]
-
+		new_xlim = tuple(axes.get_xlim())
+		self.updateUN(new_xlim=new_xlim)
 		self.indicator.clear()
 		self.indicator.set_xlim(self.my_syncer.time_series[0].timestamp[0], self.my_syncer.time_series[0].timestamp[-1])
 		self.indicator.axvspan(new_xlim[0], new_xlim[1], facecolor="g")
-
-		# self.indicatorRight.clear()
-		# self.indicatorRight.set_xlim(self.my_syncer.time_series[0].timestamp[0],
-		# 							self.my_syncer.time_series[0].timestamp[-1])
-		# self.indicatorRight.axvspan(new_xlim[0], new_xlim[1], facecolor="g")
 
 	def on_mouse_click(self, event):
 		"""
