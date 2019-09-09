@@ -5,7 +5,7 @@ Created on Thu Aug  8 12:34:23 2019
 
 @author: Nitin
 """
-import datasyncer as syncer
+import emotibit.datasyncer as syncer
 
 # import numpy as np
 # import csv
@@ -15,12 +15,12 @@ import locale
 import os
 from matplotlib.widgets import Slider, CheckButtons
 from bisect import bisect_left
-
+import platform
 
 # import pandas as pd
 
 
-class DataAnalysis:
+class DataViewer:
 	def __init__(self, file_dir, file_base, hide_dc_tags, usernote_toggle):
 		self.file_dir0 = file_dir
 		self.file_base = file_base
@@ -54,7 +54,12 @@ class DataAnalysis:
 		self.data_col0 = [7]
 		self.data_start_row1 = 2
 		self.myLocale = locale.getlocale()  # Store current locale
-		locale.setlocale(locale.LC_NUMERIC, 'en_US')  # Switch to new locale to process file
+		if platform.system() == "Darwin":
+			location = 'en_US'
+		elif platform.system() == "Windows":
+			location = 'USA'
+		# TODO: add support for linux
+		locale.setlocale(locale.LC_NUMERIC, location)  # Switch to new locale to process file
 		self.my_syncer.load_data(self.file_dir0, self.file_names0, self.data_col0)
 		locale.setlocale(locale.LC_NUMERIC, self.myLocale)  # Set locale back to orignal
 

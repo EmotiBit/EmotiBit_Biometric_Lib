@@ -12,8 +12,8 @@ Created on Thu Aug  15 3:06:23 2019
 # import numpy
 # import emotibit.flexcompparser as flexcomp
 import sys
-import dataanalysis as dataanalysis
-
+import emotibit.dataviewer as dataviewer
+# sys.path.append('/Users/nitin/GoogleDrive/MacBookPro/DocumentsRemote/CFLunpaid/Emotibit/dataAnalysis/EmotiBit_Biometric_Lib/py')
 # my_syncer = syncer.DataSyncer()
 
 # Load EmotiBit data - specify file name and path
@@ -35,4 +35,4 @@ for i, argument in enumerate(sys.argv[1:]):
             if sys.argv[i+2] == "False":
                 userNote_toggle = False
 
-analysis = dataanalysis.DataAnalysis(file_dir0, file_base, hide_DC_tags, userNote_toggle)
+analysis = dataviewer.DataViewer(file_dir0, file_base, hide_DC_tags, userNote_toggle)
