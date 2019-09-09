@@ -1,6 +1,6 @@
 # Emotibit_Biometric_Lib
 Biometric library for processing EmotiBit data
-## Data Analyser
+## Data Viewer
 
 
 The Data Analyzer is tool which can be used for visualizing the data stored on the SD-Card. It can produce a simultaneous view of 18 channel sensor data, which can be viewed interactively. The timeline indicator at the bottom is useful for checking the segment of data currently on the plots.
