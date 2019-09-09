@@ -51,6 +51,7 @@ class DataSyncer:
     def __init__(self):
         self.time_series = []
         self.csv_file_info = []
+        self.dataLoss = []
 
     # class DataType(Enum):
     #    EMOTIBIT = 0
@@ -105,6 +106,9 @@ class DataSyncer:
                                         self.time_series[last_index].data.append(locale.atof(row[data_col]))
                                     except ValueError:
                                         print(str(counter) + "--" + row[timestamp_col] + ", " + row[data_col])
+                                        # TODO: create a better exception
+                                        self.time_series[last_index].data.append(self.time_series[last_index].data[-1])
+                                        self.dataLoss.append((last_index, self.time_series[last_index].timestamp[-1] - self.time_series[last_index].timestamp[0]))
                             else:
                                 print("**** Skipping row " + str(counter) + " ****")
                                 print(row)

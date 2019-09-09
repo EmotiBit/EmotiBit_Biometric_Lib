@@ -171,7 +171,9 @@ class DataAnalysis:
 				self.axes[i, j].autoscale(enable=True, axis='y', tight=True)
 
 				# to draw background color
-				# axes[i,j].axvspan(points_UN[0],points_UN[1],facecolor = 'y',alpha = 0.5)
+				for loss in self.my_syncer.dataLoss:
+					# marking a window of len 64 red
+					self.axes[i, j].axvspan(loss[1], loss[1]+64, facecolor='r', alpha=0.5)
 
 				# plotting markers once on initialization
 
@@ -214,6 +216,7 @@ class DataAnalysis:
 		# to add the legend
 		plt.figlegend(labels=("Data", "DC", "UN"), loc='lower center', ncol=5, labelspacing=0.)
 		self.fig.suptitle(self.file_base)
+
 
 
 	def on_xlims_change(self, axes):
@@ -303,6 +306,9 @@ class DataAnalysis:
 				for i in range(9):
 					x_low_index = int((new_xlim[0]/self.my_syncer.time_series[j * 9 + i].timestamp[-1]) * len(self.my_syncer.time_series[j * 9 + i].timestamp)) - 1
 					x_high_index = int((new_xlim[1]/self.my_syncer.time_series[j * 9 + i].timestamp[-1]) * len(self.my_syncer.time_series[j * 9 + i].timestamp)) - 1
+					# print("axes[{},{}]={} to {} ==> {} to {}".format(i, j, x_low_index, x_high_index,
+					# 												 x_low_index/len(self.my_syncer.time_series[j * 9 + i].timestamp)*self.my_syncer.time_series[j * 9 + i].timestamp[-1],
+					# 												 x_high_index/len(self.my_syncer.time_series[j * 9 + i].timestamp)*self.my_syncer.time_series[j * 9 + i].timestamp[-1]))
 					new_ymin = min(self.my_syncer.time_series[j * 9 + i].data[x_low_index: x_high_index])
 					new_ymax = max(self.my_syncer.time_series[j * 9 + i].data[x_low_index: x_high_index])
 					self.axes[i, j].set_ylim([new_ymin, new_ymax])
