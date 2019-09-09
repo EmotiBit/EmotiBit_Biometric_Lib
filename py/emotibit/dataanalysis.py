@@ -199,9 +199,7 @@ class DataAnalysis:
 						try:
 							plot_idx = (int(self.data_types.index(tag) % 9), int(self.data_types.index(tag) / 9))
 							for point in self.markers["points_DO"][tag]:  # for every point in the list
-								line = self.axes[plot_idx[0], plot_idx[1]].axvline(x=point, color='k', label="DO",
-																				   zorder=1,
-																				   lw=0.75)
+								line = self.axes[plot_idx[0], plot_idx[1]].axvline(x=point, color='k', label="DO", zorder=1, lw=0.75)
 								self.lines_DO.append(line)
 						except ValueError:
 							print("Value Error")
@@ -225,7 +223,7 @@ class DataAnalysis:
 			if tag not in self.cmd_hide_dc_tags:
 				plot_idx = (int(self.data_types.index(tag) % 9), int(self.data_types.index(tag) / 9))
 				for point in self.markers["points_DC"][tag]:  # for every point in the list
-					line = self.axes[plot_idx[0], plot_idx[1]].axvline(x=point, color='r', label="DC", zorder=1, lw=0.75)
+					line = self.axes[plot_idx[0], plot_idx[1]].axvline(x=point, color='y', label="DC", zorder=1, lw=0.75)
 					self.lines_DC.append(line)
 
 		# to add the legend
@@ -234,7 +232,7 @@ class DataAnalysis:
 
 
 
-  def updateUN(self, new_xlim=(0, 0)):
+	def updateUN(self, new_xlim=(0, 0)):
 
 		"""
 		Function to update the User notes displayed on the top of the subplots
@@ -322,9 +320,6 @@ class DataAnalysis:
 				for i in range(9):
 					x_low_index = int((new_xlim[0]/self.my_syncer.time_series[j * 9 + i].timestamp[-1]) * len(self.my_syncer.time_series[j * 9 + i].timestamp)) - 1
 					x_high_index = int((new_xlim[1]/self.my_syncer.time_series[j * 9 + i].timestamp[-1]) * len(self.my_syncer.time_series[j * 9 + i].timestamp)) - 1
-					# print("axes[{},{}]={} to {} ==> {} to {}".format(i, j, x_low_index, x_high_index,
-					# 												 x_low_index/len(self.my_syncer.time_series[j * 9 + i].timestamp)*self.my_syncer.time_series[j * 9 + i].timestamp[-1],
-					# 												 x_high_index/len(self.my_syncer.time_series[j * 9 + i].timestamp)*self.my_syncer.time_series[j * 9 + i].timestamp[-1]))
 					new_ymin = min(self.my_syncer.time_series[j * 9 + i].data[x_low_index: x_high_index])
 					new_ymax = max(self.my_syncer.time_series[j * 9 + i].data[x_low_index: x_high_index])
 					self.axes[i, j].set_ylim([new_ymin, new_ymax])
