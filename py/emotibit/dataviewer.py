@@ -100,15 +100,16 @@ class DataViewer:
 
 					else:
 						print("Error: unknown tag")
-
-		for tag in self.data_groups["push_messages"]:
-			for i, (timestamp, data) in enumerate(zip(self.my_syncer.time_series[self.data_types.index(tag)].timestamp,
-													  self.my_syncer.time_series[self.data_types.index(
-														  tag)].data)):  # for each line in the file
-				if tag == "UN":
-					self.markers["points_" + tag].append([timestamp, data])
-				else:
-					print("Error: Unknown tag")
+		# TODO: come up with a better fix
+		if "UN" in self.data_types:
+			for tag in self.data_groups["push_messages"]:
+				for i, (timestamp, data) in enumerate(zip(self.my_syncer.time_series[self.data_types.index(tag)].timestamp,
+														  self.my_syncer.time_series[self.data_types.index(
+															  tag)].data)):  # for each line in the file
+					if tag == "UN":
+						self.markers["points_" + tag].append([timestamp, data])
+					else:
+						print("Error: Unknown tag")
 
 		# Start of main plotting
 		# generate the figure with subplots
@@ -135,7 +136,6 @@ class DataViewer:
 		self.TextAxesLeft.get_xaxis().set_visible(False)
 		self.TextAxesLeft.get_yaxis().set_visible(False)
 
-
 		self.TextAxesRight = self.fig.add_subplot(position=[self.axes[0, 1].get_position().x0,
 														   self.axes[0, 1].get_position().y1,
 														   self.axes[0, 1].get_position().x1 - self.axes[0, 1].get_position().x0,
@@ -151,13 +151,6 @@ class DataViewer:
 		self.indicator.set_xlim(
 			[self.my_syncer.time_series[0].timestamp[0], self.my_syncer.time_series[0].timestamp[-1]])
 
-		# self.indicatorRight = self.fig.add_subplot(position=[self.axes[8, 1].get_position().x0,
-		# 													self.axes[8, 1].get_position().y0 - 0.075,
-		# 													0.34, 0.015])
-		# self.indicatorRight.get_yaxis().set_visible(False)
-		# # self.indicatorLeft.set_ylabel("Complete Time Series", rotation="horizontal")
-		# self.indicatorRight.set_xlim(
-		# 	[self.my_syncer.time_series[0].timestamp[0], self.my_syncer.time_series[0].timestamp[-1]])
 
 		# add callbacks to the plot
 		for i in range(9):
@@ -232,7 +225,7 @@ class DataViewer:
 					self.lines_DC.append(line)
 
 		# to add the legend
-		plt.figlegend((self.lines_data[0], self.lines_DC[0], self.lines_UN[0]), labels=("Data", "DC", "UN"), loc='lower center', ncol=3, labelspacing=0.)
+		# plt.figlegend((self.lines_data[0], self.lines_DC[0], self.lines_UN[0]), labels=("Data", "DC", "UN"), loc='lower center', ncol=3, labelspacing=0.)
 		self.fig.suptitle(self.file_base)
 
 
@@ -377,10 +370,7 @@ class DataViewer:
 					# TODO: replace the hard coded "10" with limits input by the user
 					closest = self.take_closest(self.my_syncer.time_series[j * 9 + i].timestamp, 20)
 					last_idx = self.my_syncer.time_series[j * 9 + i].timestamp.index(closest)
-					self.axes[i, j].plot(self.my_syncer.time_series[j * 9 + i].timestamp[:last_idx],
-										 self.my_syncer.time_series[j * 9 + i].data[:last_idx], linestyle='-',
-										 zorder=10,
-										 alpha=0.9)
+					self.axes[i, j].plot(self.my_syncer.time_series[j * 9 + i].timestamp[:last_idx], self.my_syncer.time_series[j * 9 + i].data[:last_idx], linestyle='-', zorder=10, alpha=0.9)
 					self.axes[i, j].autoscale(enable=True, axis='y')
 					self.axes[i, j].autoscale(enable=True, axis='x')
 			self.fig.canvas.draw()
@@ -413,10 +403,7 @@ class DataViewer:
 					closest_high = self.take_closest(self.my_syncer.time_series[j * 9 + i].timestamp, val + 10)
 					begin_idx = self.my_syncer.time_series[j * 9 + i].timestamp.index(closest_low)
 					end_idx = self.my_syncer.time_series[j * 9 + i].timestamp.index(closest_high)
-					self.axes[i, j].plot(self.my_syncer.time_series[j * 9 + i].timestamp[begin_idx:end_idx],
-										 self.my_syncer.time_series[j * 9 + i].data[begin_idx:end_idx], linestyle='-',
-										 zorder=10,
-										 alpha=0.9)
+					self.axes[i, j].plot(self.my_syncer.time_series[j * 9 + i].timestamp[begin_idx:end_idx], self.my_syncer.time_series[j * 9 + i].data[begin_idx:end_idx], linestyle='-', zorder=10, alpha=0.9)
 					for line in self.lines_DC:
 						if line.axes == self.axes[i, j]:
 							if closest_low <= line.get_xdata()[0] <= closest_high:
