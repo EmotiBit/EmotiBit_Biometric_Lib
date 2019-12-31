@@ -9,7 +9,7 @@ import emotibit.datasyncer as syncer
 
 # import numpy as np
 # import csv
-# import tkinter as tk 
+# import tkinter as tk
 import matplotlib.pyplot as plt
 import locale
 import os
@@ -102,13 +102,14 @@ class DataViewer:
 						print("Error: unknown tag")
 
 		for tag in self.data_groups["push_messages"]:
-			for i, (timestamp, data) in enumerate(zip(self.my_syncer.time_series[self.data_types.index(tag)].timestamp,
-													  self.my_syncer.time_series[self.data_types.index(
-														  tag)].data)):  # for each line in the file
-				if tag == "UN":
-					self.markers["points_" + tag].append([timestamp, data])
-				else:
-					print("Error: Unknown tag")
+			if tag not in self.absentTags:
+				for i, (timestamp, data) in enumerate(zip(self.my_syncer.time_series[self.data_types.index(tag)].timestamp,
+														  self.my_syncer.time_series[self.data_types.index(
+															  tag)].data)):  # for each line in the file
+					if tag == "UN":
+						self.markers["points_" + tag].append([timestamp, data])
+					else:
+						print("Error: Unknown tag")
 
 		# Start of main plotting
 		# generate the figure with subplots
@@ -219,9 +220,10 @@ class DataViewer:
 				self.axes[i, j].set_ylabel(self.data_types[j * 9 + i])
 
 		# to mark UN text on Text axes
+		# TODO: Make the fontsize Accessible to the User
 		for (point, note) in self.markers["points_UN"]:
-			self.TextAxesLeft.text(point, 1, note, fontsize=6, rotation=45)
-			self.TextAxesRight.text(point, 1, note, fontsize=6, rotation=45)
+			self.TextAxesLeft.text(point, 1, note, fontsize=12, rotation=45)
+			self.TextAxesRight.text(point, 1, note, fontsize=12, rotation=45)
 
 		# to mark DC
 		for tag in self.markers["points_DC"].keys():
@@ -232,7 +234,7 @@ class DataViewer:
 					self.lines_DC.append(line)
 
 		# to add the legend
-		plt.figlegend((self.lines_data[0], self.lines_DC[0], self.lines_UN[0]), labels=("Data", "DC", "UN"), loc='lower center', ncol=3, labelspacing=0.)
+		# plt.figlegend((self.lines_data[0], self.lines_DC[0], self.lines_UN[0]), labels=("Data", "DC", "UN"), loc='lower center', ncol=3, labelspacing=0.)
 		self.fig.suptitle(self.file_base)
 
 
@@ -315,7 +317,7 @@ class DataViewer:
 				for j in range(2):
 					for i in range(9):
 						# TODO: change the hardcoded width of window
-						highlight = self.axes[i, j].axvspan(self.selected_time - 5, self.selected_time + 5, facecolor='y', alpha=0.5)
+						highlight = self.axes[i, j].axvspan(self.selected_time - 1, self.selected_time + 1, facecolor='y', alpha=0.5)
 						self.temp_highlights.append(highlight)
 				self.fig.canvas.draw()
 
