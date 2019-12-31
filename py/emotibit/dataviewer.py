@@ -103,14 +103,14 @@ class DataViewer:
 		# TODO: come up with a better fix
 		if "UN" in self.data_types:
 			for tag in self.data_groups["push_messages"]:
-			if tag not in self.absentTags:
-				for i, (timestamp, data) in enumerate(zip(self.my_syncer.time_series[self.data_types.index(tag)].timestamp,
-														  self.my_syncer.time_series[self.data_types.index(
-															  tag)].data)):  # for each line in the file
-					if tag == "UN":
-						self.markers["points_" + tag].append([timestamp, data])
-					else:
-						print("Error: Unknown tag")
+				if tag not in self.absentTags:
+					for i, (timestamp, data) in enumerate(zip(self.my_syncer.time_series[self.data_types.index(tag)].timestamp,
+															  self.my_syncer.time_series[self.data_types.index(
+																  tag)].data)):  # for each line in the file
+						if tag == "UN":
+							self.markers["points_" + tag].append([timestamp, data])
+						else:
+							print("Error: Unknown tag")
 
 		# Start of main plotting
 		# generate the figure with subplots

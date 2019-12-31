@@ -18,8 +18,8 @@ import emotibit.dataviewer as dataviewer
 
 # Load EmotiBit data - specify file name and path
 
-file_dir0 = "/Users/nitin/GoogleDrive/MacBookPro/DocumentsRemote/CFLunpaid/Emotibit/dataAnalysis/ControlledTest/2019-09-30_16-57-39-998980_GSR_RskinAmp_SENSITIVITY_BRD06_V01C/dataParsed"
-file_base = "2019-09-30_16-57-39-998980"
+file_dir0 = r"C:\Users\nitin\Documents\EmotiBit\DataAnalysis\controlledTest\2019-12-10_11-55-54-038975\dataParsed"
+file_base = r"2019-12-10_11-55-54-038975"
 
 # arguments for command line
 # usernote_toggle False hide_dc EA,ER
