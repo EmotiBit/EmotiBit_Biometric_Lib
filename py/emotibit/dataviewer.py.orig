@@ -100,10 +100,15 @@ class DataViewer:
 
 					else:
 						print("Error: unknown tag")
+<<<<<<< HEAD
+
+		for tag in self.data_groups["push_messages"]:
+			if tag not in self.absentTags:
+=======
 		# TODO: come up with a better fix
 		if "UN" in self.data_types:
 			for tag in self.data_groups["push_messages"]:
-			if tag not in self.absentTags:
+>>>>>>> 494f573fa7c2335d92cf60e1e2e9969934511c70
 				for i, (timestamp, data) in enumerate(zip(self.my_syncer.time_series[self.data_types.index(tag)].timestamp,
 														  self.my_syncer.time_series[self.data_types.index(
 															  tag)].data)):  # for each line in the file
