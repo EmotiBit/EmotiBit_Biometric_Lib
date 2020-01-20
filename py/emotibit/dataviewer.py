@@ -64,6 +64,7 @@ class DataViewer:
 		locale.setlocale(locale.LC_NUMERIC, self.myLocale)  # Set locale back to orignal
 
 		# shifting the x axis to start from 0
+		# TODO: Find a way to automate this removing the HardCoded dependaence on EA
 		base_val = self.my_syncer.time_series[0].timestamp[0]  # subtracting the smallest val from EA
 		for i in range(len(self.my_syncer.time_series)):
 			self.my_syncer.time_series[i].timestamp[:] = [stamp - base_val for stamp in
