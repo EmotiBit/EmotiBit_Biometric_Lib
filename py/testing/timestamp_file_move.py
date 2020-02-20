@@ -6,10 +6,6 @@ Created on Wed Feb 19 13:23:33 2020
 """
 
 import os
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-import csv
 import shutil
 
 type_tags = ['EA']

@@ -6,29 +6,12 @@ Created on Tue Feb 18 22:19:31 2020
 """
 
 import os
-import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 import csv
 
 type_tags = ['EA']
 file_dir = r"C:\priv\gd\Dropbox\CFL\EmotiBit\EmotiBit CFL Share (1)\Conferences_Talks\2020-02-14 Duke CS101 Lab\data"
 file_base_names = [f.name for f in os.scandir(file_dir) if f.is_dir()]
-
-
-
-#for type_tag in type_tags:
-#    for f in range(len(file_base_names)):
-#        eda_data = pd.read_csv(file_dir +'/' + file_base + '/' + file_base + '_' + type_tag + '.csv');
-#        
-#  
-## Destination path 
-#destination = "/home/User/Documents/file.txt"
-#
-#        file_dir +'/' + file_base + '/' + file_base + '_' + type_tag + '.csv'
-    
-
-file_base = file_base_names[0]
 
 for type_tag in type_tags:
     fig_name = type_tag + " original"

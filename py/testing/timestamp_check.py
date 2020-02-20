@@ -16,8 +16,6 @@ file_base_names = [f.name for f in os.scandir(file_dir) if f.is_dir()]
 nbins = 100
 fig_size = [1700.0, 900.0]
 
-file_base = file_base_names[0]
-
 for type_tag in type_tags:
     fig_name = type_tag + ' Timestamp'
     fig = plt.figure(fig_name)

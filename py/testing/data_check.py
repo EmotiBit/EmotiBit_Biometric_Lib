@@ -34,11 +34,10 @@ for type_tag in type_tags:
         ts_diff_emotibit = np.diff(eda_data.EmotiBitTimestamp) / 1000
 
         plt.sca(axs[f])
-        
-            
         plt.plot(eda_data.EpochTimestamp, eda_data[type_tag])
-        ylim = plt.ylim()
-        plt.ylim(max(ylim[0], ylims[0]), min(ylim[1], ylims[1]))
+        if (len(ylims) > 0):
+            ylim = plt.ylim()
+            plt.ylim(max(ylim[0], ylims[0]), min(ylim[1], ylims[1]))
         h = plt.ylabel(file_base)
         h.set_rotation(0)
         axs[f].yaxis.set_label_position("right")
