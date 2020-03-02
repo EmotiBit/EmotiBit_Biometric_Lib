@@ -11,8 +11,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 type_tags = ['EA']
-file_dir = r"C:\priv\gd\Dropbox\CFL\EmotiBit\EmotiBit CFL Share (1)\Conferences_Talks\2020-02-14 Duke CS101 Lab\data"
-file_base_names = [f.name for f in os.scandir(file_dir) if f.is_dir()]
+file_dir = r"C:\priv\gd\Dropbox\CFL\EmotiBit\EmotiBit CFL Share (1)\EmotiBit Test Data\Beta Test Data\Acute"
+#file_base_names = [f.name for f in os.scandir(file_dir) if f.is_dir()]
+file_base_names = ["2020-03-01_17-21-54-296257", "2020-03-01_17-21-54-296257"]
 nbins = 100
 fig_size = [1700.0, 900.0]
 
