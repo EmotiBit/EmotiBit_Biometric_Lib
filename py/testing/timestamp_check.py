@@ -11,9 +11,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 type_tags = ['EA']
-file_dir = r"C:\priv\gd\Dropbox\CFL\EmotiBit\EmotiBit CFL Share (1)\EmotiBit Test Data\Beta Test Data\Acute"
+type_tags = ['PR', 'PI', 'PG', 'EA', 'EL', 'ER', 'H0', 'AX', 'AY', 'AZ', 
+             'GX', 'GY', 'GZ', 'MX', 'MY', 'MZ', 'T0']
+file_dir = r"C:\priv\gd\Dropbox\CFL\EmotiBit\EmotiBit CFL Share (1)\EmotiBit Test Data\Beta Test Data\Chronic\Sean"
 #file_base_names = [f.name for f in os.scandir(file_dir) if f.is_dir()]
-file_base_names = ["2020-03-01_17-21-54-296257", "2020-03-01_17-21-54-296257"]
+file_base_names = ["2020-03-02_07-29-24-310212", "2020-03-02_07-29-24-310212"]
 nbins = 100
 fig_size = [1700.0, 900.0]
 
@@ -28,7 +30,9 @@ for type_tag in type_tags:
     plt.subplots_adjust(left=.3)
     for f in range(len(file_base_names)):
         file_base = file_base_names[f]
-        eda_data = pd.read_csv(file_dir +'/' + file_base + '/' + file_base + '_' + type_tag + '.csv');
+        file_path = file_dir + '/' + file_base + '/' + file_base + '_' + type_tag + '.csv'
+        print(file_path)
+        eda_data = pd.read_csv(file_path);
         ts_diff_epoch = np.diff(eda_data.EpochTimestamp)
         ts_diff_emotibit = np.diff(eda_data.EmotiBitTimestamp) / 1000
 
