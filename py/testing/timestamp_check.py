@@ -10,12 +10,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-type_tags = ['EA']
+### Add the type tage in the list which you want test
 type_tags = ['PR', 'PI', 'PG', 'EA', 'EL', 'ER', 'H0', 'AX', 'AY', 'AZ', 
              'GX', 'GY', 'GZ', 'MX', 'MY', 'MZ', 'T0']
-file_dir = r"C:\priv\gd\Dropbox\CFL\EmotiBit\EmotiBit CFL Share (1)\EmotiBit Test Data\Beta Test Data\Chronic\Sean"
-#file_base_names = [f.name for f in os.scandir(file_dir) if f.is_dir()]
-file_base_names = ["2020-03-02_07-29-24-310212", "2020-03-02_07-29-24-310212"]
+### Use the data parser to parse the file. Add the path to the folder below.
+### Make sure the data is stored as <file_dir>/filename/filename_[type_tag]. 
+### ex: C:\Users\nitin\Documents\EmotiBit\DataAnalysis\unControlledTest\2020-04-09_10-41-19-913922\2020-04-09_10-41-19-913922_PR.csv
+file_dir = r"C:\Users\nitin\Documents\EmotiBit\DataAnalysis\unControlledTest"
+
+file_base_names = ["2020-04-09_10-41-19-913922", "2020-04-09_10-41-19-913922"]
 nbins = 100
 fig_size = [1700.0, 900.0]
 
@@ -30,7 +33,7 @@ for type_tag in type_tags:
     plt.subplots_adjust(left=.3)
     for f in range(len(file_base_names)):
         file_base = file_base_names[f]
-        file_path = file_dir + '/' + file_base + '/' + file_base + '_' + type_tag + '.csv'
+        file_path = file_dir + '\\' + file_base + '\\' + file_base + '_' + type_tag + '.csv'
         print(file_path)
         eda_data = pd.read_csv(file_path);
         ts_diff_epoch = np.diff(eda_data.EpochTimestamp)
