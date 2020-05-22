@@ -1,4 +1,4 @@
-# Welcome to the python library
+# Welcome to the EmotiBit Python Library
 
 ## Easy Setup
 * Setup Anaconda Python
