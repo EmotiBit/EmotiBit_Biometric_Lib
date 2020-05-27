@@ -4,16 +4,21 @@ The Python DataViewer is a tool developed to help visualize the data captured on
 - You need to have python installed on your system to use the dataViewer. The easiest way to use get python is to install anaconda navigator.
 - Click [here](https://www.anaconda.com/products/individual) to download the latest anaconda release. Make sure to get Anaconda distribution for Python 3.7
 - Once installed, you will have access to Anaconda Navigator and Anaconda prompt.
-- Open the Anaconda prompt. You can do so by typing `anaconda` in the start menu and choosing `Anaconda prompt`.
-<img src="../../../assets/anaconda-prontpt-start.jpg" width="400" length="400">
 - The easiest way to create an environment required for dataViewer is to import the environment using a yml file. 
 - We have provided a `env.yml` with this repo. You can find the file in `py/anaconda-environments/EmotiBit-pyenv.yml`.
+- Open the Anaconda prompt. You can do so by typing `anaconda` in the start menu and choosing `Anaconda prompt`.
+<img src="../../../assets/anaconda-prontpt-start.jpg" width="400">
+
 - In the `anaconda prompt`, type the following command to create the environment
   - `conda env create -f <environment>.yml`. Replace <environment> with the path to the **yml** file.
 - When finished, close the `anaconda prompt` and open the `anaconda navigator`. choose `EmotiBit-pyenv` as the active environment. 
+<img src="../../../assets/anaconda-choosing-environment.jpg" width="400">
+
 - Launch spyder. Open the  file `dataviewer_example.py`
+<img src="../../../assets/anaconda-launch-spyder.jpg" width="400">
+
 - To succesfully build the file, you will need to add paths to the **PYTHONPATHMANAGER**. 
-  - To do so, click on `Tools` > `PYTHONPATH manager` > `Add`. Add the path to the `py` folder.
+  - To do so, in the Spyder window, click on `Tools` > `PYTHONPATH manager` > `Add`. Add the path to the `py` folder(the one included in this repo).
 - You will need to close and restart the `Spyder` for the changes to take effect.
 - Run the command `%matplotlib qt` in the iPython terminal once you reopen `Spyder`. This enables plotting in interactive windows.
 - Follow the steps below to load the data.
