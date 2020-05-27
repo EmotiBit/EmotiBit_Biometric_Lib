@@ -5,8 +5,7 @@ The Python DataViewer is a tool developed to help visualize the data captured on
 - Click [here](https://www.anaconda.com/products/individual) to download the latest anaconda release. Make sure to get Anaconda distribution for Python 3.7
 - Once installed, you will have access to Anaconda Navigator and Anaconda prompt.
 - Open the Anaconda prompt. You can do so by typing `anaconda` in the start menu and choosing `Anaconda prompt`.
-[comment]: <> (![][conda-prompt])
-<img src="../../../assets/anaconda-prontpt-start.jpg" width="500">
+<img src="../../../assets/anaconda-prontpt-start.jpg" width="400" length="400">
 - The easiest way to create an environment required for dataViewer is to import the environment using a yml file. 
 - We have provided a `env.yml` with this repo. You can find the file in `py/anaconda-environments/EmotiBit-pyenv.yml`.
 - In the `anaconda prompt`, type the following command to create the environment
