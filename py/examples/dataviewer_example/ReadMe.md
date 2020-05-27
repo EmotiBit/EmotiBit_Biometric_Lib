@@ -12,15 +12,18 @@ The Python DataViewer is a tool developed to help visualize the data captured on
 - In the `anaconda prompt`, type the following command to create the environment
   - `conda env create -f <environment>.yml`. Replace <environment> with the path to the **yml** file.
 - When finished, close the `anaconda prompt` and open the `anaconda navigator`. choose `EmotiBit-pyenv` as the active environment. 
-<img src="../../../assets/anaconda-choosing-environment.jpg" width="400">
 
-- Launch spyder. Open the  file `dataviewer_example.py`
-<img src="../../../assets/anaconda-launch-spyder.jpg" width="400">
+![][conda-choose-env]
 
+- Once EmotiBit-pyenv is active, Launch spyder.
+
+![][conda-start-spyder]
+
+- Open the  file `dataviewer_example.py`
 - To succesfully build the file, you will need to add paths to the **PYTHONPATHMANAGER**. 
   - To do so, in the Spyder window, click on `Tools` > `PYTHONPATH manager` > `Add`. Add the path to the `py` folder(the one included in this repo).
 - You will need to close and restart the `Spyder` for the changes to take effect.
-- Run the command `%matplotlib qt` in the iPython terminal once you reopen `Spyder`. This enables plotting in interactive windows.
+- Once Spyder is restarted, run the command `%matplotlib qt` in the iPython terminal. This enables plotting in interactive windows.
 - Follow the steps below to load the data.
 - Press `Run` to run the example.
 
