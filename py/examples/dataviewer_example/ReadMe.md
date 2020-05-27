@@ -5,6 +5,7 @@ The Python DataViewer is a tool developed to help visualize the data captured on
 - Click [here](https://www.anaconda.com/products/individual) to download the latest anaconda release. Make sure to get Anaconda distribution for Python 3.7
 - Once installed, you will have access to Anaconda Navigator and Anaconda prompt.
 - Open the Anaconda prompt. You can do so by typing `anaconda` in the start menu and choosing `Anaconda prompt`.
+![][conda-prompt]
 - The easiest way to create an environment required for dataViewer is to import the environment using a yml file. 
 - We have provided a `env.yml` with this repo. You can find the file in `py/anaconda-environments/EmotiBit-pyenv.yml`.
 - In the `anaconda prompt`, type the following command to create the environment
@@ -44,3 +45,7 @@ The Python DataViewer is a tool developed to help visualize the data captured on
   - **_hide/show DC markers_**: The Cutoffs(instances when the sensor data goes out of bounds) in the data, are marked with red verticle lines. You can toggle the visibility of the DC markers in any individual plot by clicking on the plot and presing the `space` key. Pressing it once remoes the DC markers from that plot. Pressing it again will re-mark the lines on the plot.
   - **_Y-Axis Autoscale_**: After you zoom into any portion of the data, the data on each plot can be scaled . by pressing the `a` key. This adjusts the Y-Axis limits for each plot.
   - **_Mark any point in time on the fly_**: Click on the point(any location within the plot) you want to highlihgt, and press `m`. This will highlight a region around that point in time on all plots. This is great way to see the relative position on any activity across plots. Click anywhere on the figure, outside the plots to remove this highlight
+
+[conda-choose-env]: ../../../assets/anaconda-choosing-environment.jpg "Anaconda Environment Choosing"
+[conda-start-spyder]: ../../../assets/anaconda-launch-spyder.jpg "Anaconda launch Spyder"
+[conda-prompt]: ../../../assets/anaconda-prontpt-start.jpg "Anaconda prompt start"
