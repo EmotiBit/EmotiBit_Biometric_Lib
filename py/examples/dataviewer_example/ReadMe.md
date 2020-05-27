@@ -1,3 +1,22 @@
+## Overview
+The Python DataViewer is a tool developed to help visualize the data captured on EmotiBit. It is an interactive tool where you can view the entire data at once, zoom in and out of any part in the time series, compare data accross different channels and get an overall sense of the data captured.
+## Getting Started
+- You need to have python installed on your system to use the dataViewer. The easiest way to use get python is to install anaconda navigator.
+- Click [here](https://www.anaconda.com/products/individual) to download the latest anaconda release. Make sure to get Anaconda distribution for Python 3.7
+- Once installed, you will have access to Anaconda Navigator and Anaconda prompt.
+- Open the Anaconda prompt. You can do so by typing `anaconda` in the start menu and choosing `Anaconda prompt`.
+- The easiest way to create an environment required for dataViewer is to import the environment using a yml file. 
+- We have provided a `env.yml` with this repo. You can find the file in `py/anaconda-environments/EmotiBit-pyenv.yml`.
+- In the `anaconda prompt`, type the following command to create the environment
+  - `conda env create -f <environment>.yml`. Replace <environment> with the path to the **yml** file.
+- When finished, close the `anaconda prompt` and open the `anaconda navigator`. choose `EmotiBit-pyenv` as the active environment. 
+- Launch spyder. Open the  file `dataviewer_example.py`
+- To succesfully build the file, you will need to add paths to the **PYTHONPATHMANAGER**. 
+  - To do so, click on `Tools` > `PYTHONPATHMANAGER` > `Add`. Add the path to the `py` folder.
+- You will need to close and restart the `Spyder` for the changes to take effect.
+- Follow the steps below to load the data.
+- Press `Run` to run the example.
+
 
 ### Steps to load data
  - Specify the path to the folder containing the parsed data(The output of the data parser), inside the double quotes of the _variable_ **file_dir0**.
