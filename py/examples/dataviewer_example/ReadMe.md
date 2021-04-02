@@ -59,4 +59,4 @@ The Python DataViewer is a tool developed to help visualize the data captured on
 [conda-choose-env]: ../../../assets/anaconda-choosing-environment.jpg "Anaconda Environment Choosing"
 [conda-start-spyder]: ../../../assets/anaconda-launch-spyder.jpg "Anaconda launch Spyder"
 [conda-prompt]: ../../../assets/anaconda-prontpt-start.jpg "Anaconda prompt start"
-[EmotiBit-PythonDataViewer]: ../../../assets/anaconda-prontpt-start.jpg "EmotiBit-PythonDataViewer"
+[EmotiBit-PythonDataViewer]: ../../../assets/PythonDataViewer.jpg "EmotiBit-PythonDataViewer"
