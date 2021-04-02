@@ -1,5 +1,7 @@
 ## Overview
 The Python DataViewer is a tool developed to help visualize the data captured on EmotiBit. It is an interactive tool where you can view the entire data at once, zoom in and out of any part in the time series, compare data accross different channels and get an overall sense of the data captured.
+![][EmotiBit-PythonDataViewer]
+
 ## Getting Started
 - You need to have python installed on your system to use the dataViewer. The easiest way to use get python is to install anaconda navigator.
 - Click [here](https://www.anaconda.com/products/individual) to download the latest anaconda release. Make sure to get Anaconda distribution for Python 3.7
@@ -57,3 +59,4 @@ The Python DataViewer is a tool developed to help visualize the data captured on
 [conda-choose-env]: ../../../assets/anaconda-choosing-environment.jpg "Anaconda Environment Choosing"
 [conda-start-spyder]: ../../../assets/anaconda-launch-spyder.jpg "Anaconda launch Spyder"
 [conda-prompt]: ../../../assets/anaconda-prontpt-start.jpg "Anaconda prompt start"
+[EmotiBit-PythonDataViewer]: ../../../assets/anaconda-prontpt-start.jpg "EmotiBit-PythonDataViewer"
