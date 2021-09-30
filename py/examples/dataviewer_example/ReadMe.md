@@ -49,7 +49,7 @@ The Python DataViewer is a tool developed to help visualize the data captured on
      - The tags for which the DC markers should be avoided must be separated by _commas_
      - click on `Ok`
      - Run the cmmand `%matplotlib qt` on the spyder iPython terminal to enable plotting graphs on a separate window, if not already done so.
-     - Run the file in Spyder.
+- Run the file in Spyder.
 ### The python visualizer has the folowing functions available for use
 - You can **zoom** into any part of the plot using the default `zoom button` provided in the spyder. Just press the magnifying glass icon, click and drag anywhere on the plot to zoom in on that portion.
 - The `move button` is located next to the `zoom button`. you can press this button and _click and drag_ on any plot to slide through the data. If you press the `x` button or the `y` button simultaneously when moving, the data is moves only in the _x or the y direction_, respectively.
