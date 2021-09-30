@@ -1,6 +1,6 @@
 # Welcome to the EmotiBit Python Library
 
-## Easy Setup
+## Setup Anaconda and Spyder
 * Setup Anaconda Python
   * See these helpful instructions - https://medium.com/@Shreedharvellay/anaconda-jupyter-spyder-things-you-need-to-know-3c808d824739
     * Briefly:
@@ -12,6 +12,7 @@
   * Open Tools>Preferences>IPython console>Graphics>Backend>Automatic
     * [ToDo: insert screenshot]
 * Close and re-launch Spyder
+
 [comment]: <> (**Note:** Sample data has been provided. You should be able to visualize the data just by clicking `Run` button in spyder.)
 
 ## Checkout the [examples](./examples) folder to start working with the recorded data.
