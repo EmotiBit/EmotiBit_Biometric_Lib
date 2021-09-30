@@ -12,7 +12,7 @@ The Python DataViewer is a tool developed to help visualize the data captured on
 <img src="../../../assets/anaconda-prontpt-start.jpg" width="400">
 
 - In the `anaconda prompt`, type the following command to create the environment
-  - `conda env create -f <environment>.yml`. Replace <environment> with the path to the **yml** file.
+  - `conda env create -f <environment>.yml`. Replace `<environment>` with the path to the **yml** file.
 - When finished, close the `anaconda prompt` and open the `anaconda navigator`. choose `EmotiBit-pyenv` as the active environment. 
 
 ![][conda-choose-env]
