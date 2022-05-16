@@ -21,13 +21,13 @@ import platform
 
 
 class DataViewer:
-	def __init__(self, file_dir, file_base, hide_dc_tags, usernote_toggle):
+	def __init__(self, file_dir, file_base, hide_dc_tags, usernote_toggle, hide_DO):
 		self.file_dir0 = file_dir
 		self.file_base = file_base
 		self.file_ext = ".csv"
 		self.cmd_hide_dc_tags = hide_dc_tags
 		self.cmd_usernote_toggle = usernote_toggle
-		self.data_types = ["EA", "EL", "ER", "PI", "PR", "PG", "T0", "TH", "H0", "AX", "AY", "AZ", "GX", "GY", "GZ",
+		self.data_types = ["EA", "SA", "SR", "SF","PI", "PR", "PG", "HR", "TH", "AX", "AY", "AZ", "GX", "GY", "GZ",
 						   "MX", "MY", "MZ", "DC", "DO", "UN"]  # add the aperiodic data types
 		# TODO: try to come up with better grouping with less redundancy
 		self.data_groups = {"accelerometer": ["AX", "AY", "AZ"],
@@ -72,15 +72,15 @@ class DataViewer:
 		# Declaring all markers which are going to populate the plot apart from the data.
 		# Achieved after reading non-data files
 		# TODO: change the structure of markers to be in sync with data groups
-		self.markers = {"points_DC": {"EA": [], "EL": [], "ER": [],
+		self.markers = {"points_DC": {"EA": [], "SA": [], "SR": [],
 									  "PI": [], "PR": [], "PG": [],
-									  "T0": [], "TH": [], "H0": [],
+									  "TH": [], "SF": [], "HR": [],
 									  "AX": [], "AY": [], "AZ": [],
 									  "GX": [], "GY": [], "GZ": [],
 									  "MX": [], "MY": [], "MZ": []},
-						"points_DO": {"EA": [], "EL": [], "ER": [],
+						"points_DO": {"EA": [], "SA": [], "SR": [],
 									  "PI": [], "PR": [], "PG": [],
-									  "T0": [], "TH": [], "H0": [],
+									  "TH": [], "SF": [], "HR": [],
 									  "AX": [], "AY": [], "AZ": [],
 									  "GX": [], "GY": [], "GZ": [],
 									  "MX": [], "MY": [], "MZ": [], "DC": []},
@@ -96,10 +96,11 @@ class DataViewer:
 						self.markers["points_" + tag][data].append(timestamp)
 
 					elif tag == "DO":
-						self.markers["points_" + tag][data].append(timestamp)
+						if hide_DO == False:
+							self.markers["points_" + tag][data].append(timestamp)
 
 					else:
-						print("Error: unknown tag")
+						print("Error: unknown tag:" + tag)
 		# TODO: come up with a better fix
 		if "UN" in self.data_types:
 			for tag in self.data_groups["push_messages"]:
