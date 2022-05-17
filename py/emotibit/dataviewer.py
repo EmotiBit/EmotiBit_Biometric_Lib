@@ -21,7 +21,7 @@ import platform
 
 
 class DataViewer:
-	def __init__(self, file_dir, file_base, hide_dc_tags, usernote_toggle, hide_DO):
+	def __init__(self, file_dir, file_base, hide_dc_tags, usernote_toggle):
 		self.file_dir0 = file_dir
 		self.file_base = file_base
 		self.file_ext = ".csv"
@@ -85,7 +85,9 @@ class DataViewer:
 									  "GX": [], "GY": [], "GZ": [],
 									  "MX": [], "MY": [], "MZ": [], "DC": []},
 						"points_UN": []}
-
+		# Set to false to stop processing DC and DO files below. The Data parser needs a patch to handle DC/DO version 2 before reading that data
+		self.parseDo = False 
+		self.parseDc = False
 		# reading all the markers from files and storing in markers dict
 		for tag in self.data_groups["aperiodic"]:  # for each aperiodic signal
 			if tag not in self.absentTags:
@@ -93,10 +95,11 @@ class DataViewer:
 						zip(self.my_syncer.time_series[self.data_types.index(tag)].timestamp,
 							self.my_syncer.time_series[self.data_types.index(tag)].data)):  # for each line in the file
 					if tag == "DC":
-						self.markers["points_" + tag][data].append(timestamp)
+						if self.parseDc == True:
+							self.markers["points_" + tag][data].append(timestamp)
 
 					elif tag == "DO":
-						if hide_DO == False:
+						if self.parseDo  == True:
 							self.markers["points_" + tag][data].append(timestamp)
 
 					else:
