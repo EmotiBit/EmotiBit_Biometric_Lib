@@ -18,8 +18,8 @@ file_base = r"base-file-name"  # 2019-12-10_11-55-54-038975
 # usernote_toggle False hide_dc EA,ER
 
 hide_DC_tags = ["EA", "SA", "SR", "SF","PI", "PR", "PG", "HR", "TH", "AX", "AY", "AZ", "GX", "GY", "GZ",
-						   "MX", "MY", "MZ", "DC", "DO", "UN"] 
-hide_DO = True
+						   "MX", "MY", "MZ", "T1", "DC", "DO", "UN"] 
+
 userNote_toggle = True
 for i, argument in enumerate(sys.argv[1:]):
     if i % 2 == 0:  # even position counting from after file name
@@ -30,4 +30,4 @@ for i, argument in enumerate(sys.argv[1:]):
             if sys.argv[i+2] == "False":
                 userNote_toggle = False
 
-analysis = dataviewer.DataViewer(file_dir, file_base, hide_DC_tags, userNote_toggle, hide_DO)
+analysis = dataviewer.DataViewer(file_dir, file_base, hide_DC_tags, userNote_toggle)

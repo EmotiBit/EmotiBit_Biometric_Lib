@@ -21,14 +21,14 @@ import platform
 
 
 class DataViewer:
-	def __init__(self, file_dir, file_base, hide_dc_tags, usernote_toggle, hide_DO):
+	def __init__(self, file_dir, file_base, hide_dc_tags, usernote_toggle):
 		self.file_dir0 = file_dir
 		self.file_base = file_base
 		self.file_ext = ".csv"
 		self.cmd_hide_dc_tags = hide_dc_tags
 		self.cmd_usernote_toggle = usernote_toggle
 		self.data_types = ["EA", "SA", "SR", "SF","PI", "PR", "PG", "HR", "TH", "AX", "AY", "AZ", "GX", "GY", "GZ",
-						   "MX", "MY", "MZ", "DC", "DO", "UN"]  # add the aperiodic data types
+						   "MX", "MY", "MZ", "T1","DC", "DO", "UN"]  # add the aperiodic data types
 		# TODO: try to come up with better grouping with less redundancy
 		self.data_groups = {"accelerometer": ["AX", "AY", "AZ"],
 							"gyroscope": ["GX", "GY", "GZ"],
@@ -77,15 +77,17 @@ class DataViewer:
 									  "TH": [], "SF": [], "HR": [],
 									  "AX": [], "AY": [], "AZ": [],
 									  "GX": [], "GY": [], "GZ": [],
-									  "MX": [], "MY": [], "MZ": []},
+									  "MX": [], "MY": [], "MZ": [], "T1":[]},
 						"points_DO": {"EA": [], "SA": [], "SR": [],
 									  "PI": [], "PR": [], "PG": [],
 									  "TH": [], "SF": [], "HR": [],
 									  "AX": [], "AY": [], "AZ": [],
 									  "GX": [], "GY": [], "GZ": [],
-									  "MX": [], "MY": [], "MZ": [], "DC": []},
+									  "MX": [], "MY": [], "MZ": [], "T1":[], "DC": []},
 						"points_UN": []}
-
+		# Set to false to stop processing DC and DO files below. The Data parser needs a patch to handle DC/DO version 2 before reading that data
+		self.parseDo = False 
+		self.parseDc = False
 		# reading all the markers from files and storing in markers dict
 		for tag in self.data_groups["aperiodic"]:  # for each aperiodic signal
 			if tag not in self.absentTags:
@@ -93,10 +95,11 @@ class DataViewer:
 						zip(self.my_syncer.time_series[self.data_types.index(tag)].timestamp,
 							self.my_syncer.time_series[self.data_types.index(tag)].data)):  # for each line in the file
 					if tag == "DC":
-						self.markers["points_" + tag][data].append(timestamp)
+						if self.parseDc == True:
+							self.markers["points_" + tag][data].append(timestamp)
 
 					elif tag == "DO":
-						if hide_DO == False:
+						if self.parseDo  == True:
 							self.markers["points_" + tag][data].append(timestamp)
 
 					else:
@@ -195,7 +198,7 @@ class DataViewer:
 
 				# to mark DO
 				for tag in self.markers["points_DO"].keys():
-					if tag != "DC":
+					if self.parseDo and tag != "DC":
 						try:
 							plot_idx = (int(self.data_types.index(tag) % 9), int(self.data_types.index(tag) / 9))
 							for point in self.markers["points_DO"][tag]:  # for every point in the list
@@ -221,7 +224,7 @@ class DataViewer:
 
 		# to mark DC
 		for tag in self.markers["points_DC"].keys():
-			if tag not in self.cmd_hide_dc_tags:
+			if self.parseDc and tag not in self.cmd_hide_dc_tags:
 				plot_idx = (int(self.data_types.index(tag) % 9), int(self.data_types.index(tag) / 9))
 				for point in self.markers["points_DC"][tag]:  # for every point in the list
 					line = self.axes[plot_idx[0], plot_idx[1]].axvline(x=point, color='y', label="DC", zorder=1, lw=0.75)
