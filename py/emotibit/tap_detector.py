@@ -23,7 +23,7 @@ file_dir = r"C:\priv\gd\Dropbox\CFL\EmotiBit\EmotiBit CFL Share\EmotiBit Test Da
 
 
 file_base_names = ["2022-06-07_15-23-33-810389"]
-time_window = [0, 2000] # seconds
+time_window = [0, 5000] # seconds
 height = 0.25
 
 type_tags = ['AX', 'AY', 'AZ']
@@ -64,6 +64,7 @@ for f in range(len(file_base_names)):
         plt.sca(plt.subplot(len(type_tags) + 1, 1, t + 1))
         plt.plot(data[t][type_tag].to_numpy()[time_mask])
         plt.gca().set_ylabel(type_tag)
+        plt.gca().axes.xaxis.set_visible(False)
         
         
         # Create vector data
@@ -77,9 +78,12 @@ for f in range(len(file_base_names)):
         
     data_vec = np.sqrt(data_vec)
     p_ind, p_val = find_peaks(data_vec[0 : sum(timestamps_rel < time_window[1])], height=height)
+    p_ind = p_ind[p_ind > time_mask[0][0]] # Remove indexes less than time_window[0]
+    
     
     plt.sca(plt.subplot(len(type_tags) + 1, 1, len(type_tags) + 1))
     
+    time_mask = time_mask[0][0 : min(len(time_mask[0]) - 1, len(timestamps_rel) - 1)]
     masked_timestamps = timestamps_rel[time_mask]
     
     plt.plot(masked_timestamps, data_vec[time_mask])
