@@ -25,7 +25,7 @@ def detect(file_dir = "", file_base_names = "", time_window = [0, 50000], height
     @param  height Height of the threshold for detecting peaks
     @ToDo   Add multiple time_windows as input
     """
-    print('arg: ', file_dir)
+    print('***\ntapdetector.detect()')
 
     type_tags = ['AX', 'AY', 'AZ']
     time_mask = []
@@ -103,7 +103,7 @@ def detect(file_dir = "", file_base_names = "", time_window = [0, 50000], height
         print("Tap LocalTimestamp: ", timestamps[p_ind])
         
         file_path = file_dir + '\\' + file_base + '\\' + file_base + '_' + 'taps' + '.csv'
-        print('\n' + file_path)
+        print('Saving: ' + file_path)
         
         tap_data= {'Indexes': p_ind,
             'RelativeTimestamp': timestamps_rel[p_ind],
