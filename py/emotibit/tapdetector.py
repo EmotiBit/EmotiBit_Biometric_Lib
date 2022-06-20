@@ -14,7 +14,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import find_peaks
 
-def detect(file_dir = "", file_base_names = "", time_window = [0, 50000], height = 0.25):
+def detect(file_dir = "", file_base_names = "", timestamp_id = "LocalTimestamp", 
+           time_window = [0, 50000], height = 0.25):
     """
     @fn     detect()
     @brief  Detects tap times and saves the results in a file named *_taps.csv
@@ -39,11 +40,13 @@ def detect(file_dir = "", file_base_names = "", time_window = [0, 50000], height
     print("type_tags: ", type_tags)
     print("time_window: ", time_window)
     print("height: ", height)
+    print("timestamp_id: ", timestamp_id)
     print("Directory: ", file_dir)
     print("file_base_names: ", file_base_names)
     
     
     # ToDo Add multiple time_windows
+    # ToDo Add multiple timestamp_ids
     for f in range(len(file_base_names)):
         file_base = file_base_names[f]
         print("File: ", file_base)
@@ -59,7 +62,7 @@ def detect(file_dir = "", file_base_names = "", time_window = [0, 50000], height
             
             # Create time segment
             # NOTE: this only works for signals with the same sampling rate
-            timestamps = data[t]['LocalTimestamp'].to_numpy()
+            timestamps = data[t][timestamp_id].to_numpy()
             timestamps_rel = timestamps - timestamps[0]
             time_mask = np.where((timestamps_rel > time_window[0]) & (timestamps_rel < time_window[1]))
             
@@ -100,13 +103,13 @@ def detect(file_dir = "", file_base_names = "", time_window = [0, 50000], height
         
         print("***\nTap indexes: ", p_ind)
         print("Tap RelativeTimestamp: ", timestamps_rel[p_ind])
-        print("Tap LocalTimestamp: ", timestamps[p_ind])
+        print("Tap " + timestamp_id + ": ", timestamps[p_ind])
         
         file_path = file_dir + '\\' + file_base + '\\' + file_base + '_' + 'taps' + '.csv'
         print('Saving: ' + file_path)
         
         tap_data= {'Indexes': p_ind,
             'RelativeTimestamp': timestamps_rel[p_ind],
-            'LocalTimestamp': timestamps[p_ind]}
+            timestamp_id: timestamps[p_ind]}
         df = pd.DataFrame(tap_data);
         df.to_csv(file_path, float_format='%10.6f', index=False)
