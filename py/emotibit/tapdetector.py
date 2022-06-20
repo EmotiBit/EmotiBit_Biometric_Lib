@@ -5,6 +5,7 @@
 acceleration. Can be used for tap synchronizing EmotiBit with other devices.
 @example tapdetector.detect(file_dir = r"C:\priv\myDir", 
                             file_base_names = ["2022-06-07_15-23-33-810389"], 
+                            timestamp_id = "LocalTimestamp",
                             time_window = [11, 14], 
                             height = 0.13)
 """
@@ -22,6 +23,7 @@ def detect(file_dir = "", file_base_names = "", timestamp_id = "LocalTimestamp",
     @param  file_dir Base directory of the parsed data files
     @param  file_base_names array of file bases of the data files. Expected 
             organization is file_dir/file_base_names[i]/file_base_names[i]_XX.csv
+    @param  timestamp_id timestamp identifier to use for timestamps of taps
     @param  time_window Window (in secs) from the beginning of the file to look for taps
     @param  height Height of the threshold for detecting peaks
     @ToDo   Add multiple time_windows as input
