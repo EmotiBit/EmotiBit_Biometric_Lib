@@ -10,9 +10,9 @@ import sys
 import emotibit.dataviewer as dataviewer
 
 # specify the location of the folder which contains the parsed data
-file_dir = r"path/to/parsed/data"  # Ex. C:\Users\dev\data
+file_dir = r"C:\priv\local\EmotiBit_Data\ESP32 Test Data 2022-06-27\2022-07-13_10-41-48-900345"  # Ex. C:\Users\dev\data
 # specify the base file name of teh parsed data
-file_base = r"base-file-name"  # 2019-12-10_11-55-54-038975
+file_base = r"2022-07-13_10-41-48-900345"  # 2019-12-10_11-55-54-038975
 
 # arguments for command line
 # usernote_toggle False hide_dc EA,ER

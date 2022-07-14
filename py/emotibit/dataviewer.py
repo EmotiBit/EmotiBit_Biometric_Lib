@@ -51,7 +51,26 @@ class DataViewer:
 				self.absentTags.append(data_type)
 		for tag in self.absentTags:
 			self.data_types.remove(tag)
-		self.data_col0 = [7]
+			
+		# Identify the timestamp and data columns
+		self.timestamp_col = 0 # Default to 1st column for timestamp
+		self.data_col0 = [7] # Default to 7th column for data
+		col_id_type = "EA"
+		timestamp_headers = ["LocalTimestamp", "EpochTimestamp"] # ToDo: add optional input
+		with open(self.file_dir0 + "/" + self.file_base + "_" + col_id_type + self.file_ext) as f:
+			firstline = next(f)
+			firstline = firstline.split("\n")[0]
+			col_headers = firstline.split(",")
+			for i in range(len(col_headers)):
+				for h in timestamp_headers:
+					if (col_headers[i] == h):
+						self.timestamp_col = i
+						print("Timestamp column = " + str(self.timestamp_col))
+				if (col_headers[i] == col_id_type):
+					self.data_col0 = i
+					print("Data column = " + str(self.data_col0))
+				# ToDo: add error handling
+		
 		self.data_start_row1 = 2
 		self.myLocale = locale.getlocale()  # Store current locale
 		if platform.system() == "Darwin":
@@ -60,7 +79,7 @@ class DataViewer:
 			location = 'USA'
 		# TODO: add support for linux
 		locale.setlocale(locale.LC_NUMERIC, location)  # Switch to new locale to process file
-		self.my_syncer.load_data(self.file_dir0, self.file_names0, self.data_col0)
+		self.my_syncer.load_data(self.file_dir0, self.file_names0, self.data_col0, self.timestamp_col)
 		locale.setlocale(locale.LC_NUMERIC, self.myLocale)  # Set locale back to orignal
 
 		# shifting the x axis to start from 0
