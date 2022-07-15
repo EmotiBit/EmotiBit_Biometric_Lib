@@ -13,8 +13,8 @@ dependencies:
   - bcrypt=3.1.7=py37he774522_0
   - blas=1.0=mkl
   - bleach=3.1.4=py_0
-  - ca-certificates=2020.1.1=0
-  - certifi=2020.4.5.1=py37_0
+  - ca-certificates=2022.4.26=haa95532_0
+  - certifi=2022.6.15=py37haa95532_0
   - cffi=1.14.0=py37h7a1dbc1_0
   - chardet=3.0.4=py37_1003
   - cloudpickle=1.4.1=py_0
@@ -67,8 +67,9 @@ dependencies:
   - numpy=1.18.1=py37h93ca92e_0
   - numpy-base=1.18.1=py37hc3f5095_1
   - numpydoc=0.9.2=py_0
-  - openssl=1.1.1g=he774522_0
+  - openssl=1.1.1q=h2bbff1b_0
   - packaging=20.3=py_0
+  - pandas=1.2.4=py37hf11a4ad_0
   - pandoc=2.2.3.2=0
   - pandocfilters=1.4.2=py37_1
   - paramiko=2.7.1=py_0
@@ -146,5 +147,3 @@ dependencies:
   - zeromq=4.3.1=h33f27b4_3
   - zipp=3.1.0=py_0
   - zlib=1.2.11=h62dcd97_4
-prefix: C:\Users\nitin\AppData\Local\Continuum\anaconda3\envs\EmotiBit-pyenv
-
