@@ -15,16 +15,9 @@ battery_type_tag = "BV"
 file_dir = r"C:\priv\local\EmotiBit_Data\ESP32 Test Data 2022-06-27"
 
 file_base_names = [
- "2022-07-07_13-00-39-966600",\
- "2022-07-07_13-12-07-855649",\
- "2022-07-07_15-22-06-628480",\
- "2022-07-07_20-11-30-434677",\
- "2022-07-08_10-16-32-406912",\
- "2022-07-08_18-49-43-185783",\
- "2022-07-11_19-10-29-573358",\
- "2022-07-12_05-26-20-841536",\
- "2022-07-12_16-41-40-227799",\
- "2022-07-13_10-41-48-900345",\
+ "2022-07-18_16-32-31-833549",\
+ "2022-07-18_16-37-26-372411",\
+ "2022-07-18_18-09-54-431729"\
  ]
 
 timestamp_header = "LocalTimestamp"
@@ -46,6 +39,7 @@ for f in range(len(file_base_names)):
     first_clip_time = -1
     noise_battery = - 1
     final_battery = battery_data[battery_type_tag][len(battery_data[battery_type_tag]) - 1]
+    starting_battery = battery_data[battery_type_tag][1]
     clip_indexes = np.where(data[data_type_tag] < data_min_thresh)
     if (len(clip_indexes[0]) > 0):
         first_clip_time = data[timestamp_header][clip_indexes[0][0]]
@@ -61,7 +55,14 @@ for f in range(len(file_base_names)):
     print("Runtime at first clip (h) = " + str(clean_runtime))       
     print("First clip battery level = " + str(noise_battery))
     print("Final battery level = " + str(final_battery))
-    result = file_base + ", " + str(total_runtime) + ", " + str(first_clip_time) + ", " + str(clean_runtime) + ", " + str(noise_battery) + ", " + str(final_battery)
+    print("Starting battery level = " + str(starting_battery))
+    result = file_base \
+        + ", " + str(total_runtime) \
+        + ", " + str(first_clip_time) \
+        + ", " + str(clean_runtime) \
+        + ", " + str(noise_battery) \
+        + ", " + str(final_battery) \
+        + ", " + str(starting_battery)
     all_results.append(result)
     print(result)
 print("")
