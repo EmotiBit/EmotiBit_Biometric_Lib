@@ -34,7 +34,7 @@ for f in range(len(file_base_names)):
     total_runtime = round((battery_data[timestamp_header][len(battery_data[timestamp_header]) - 1] - battery_data[timestamp_header][0])/60/60,2)
     clean_runtime = total_runtime
     first_clip_time = -1
-    clip_type_tag = ""
+    wonkout_type_tag = ""
     noise_battery = - 1
     final_battery = battery_data[battery_type_tag][len(battery_data[battery_type_tag]) - 1]
     starting_battery = battery_data[battery_type_tag][1]
@@ -50,11 +50,11 @@ for f in range(len(file_base_names)):
         if (len(clip_indexes[0]) > 0):
             if (first_clip_time == -1):
                 first_clip_time = data[timestamp_header][clip_indexes[0][0]]
-                clip_type_tag = data_type_tag
+                wonkout_type_tag = data_type_tag
             else:
                 if (first_clip_time > data[timestamp_header][clip_indexes[0][0]]):
                     first_clip_time = data[timestamp_header][clip_indexes[0][0]]
-                    clip_type_tag = data_type_tag            
+                    wonkout_type_tag = data_type_tag            
             
             clean_runtime = round((first_clip_time - first_timestamp)/60/60,2)
             
@@ -63,12 +63,12 @@ for f in range(len(file_base_names)):
                 noise_battery = battery_data[battery_type_tag][battery_indexes[0][0]]
                 
     print("Total runtime (h) = " + str(total_runtime))   
-    print("First clip time = " + str(first_clip_time))
-    print("Runtime at first clip (h) = " + str(clean_runtime))       
-    print("First clip battery level = " + str(noise_battery))
+    print("First wonkout time = " + str(first_clip_time))
+    print("Runtime at first wonkout (h) = " + str(clean_runtime))       
+    print("First wonkout battery level = " + str(noise_battery))
     print("Final battery level = " + str(final_battery))
     print("Starting battery level = " + str(starting_battery))
-    print("Clip TypeTag = " + str(clip_type_tag))
+    print("Wonkout TypeTag = " + str(wonkout_type_tag))
     result = file_base \
         + ", " + str(total_runtime) \
         + ", " + str(first_clip_time) \
@@ -76,7 +76,7 @@ for f in range(len(file_base_names)):
         + ", " + str(noise_battery) \
         + ", " + str(final_battery) \
         + ", " + str(starting_battery) \
-        + ", " + str(clip_type_tag)
+        + ", " + str(wonkout_type_tag)
     all_results.append(result)
     print(result)
 print("")
