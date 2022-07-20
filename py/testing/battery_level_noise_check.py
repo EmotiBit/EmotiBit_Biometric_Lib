@@ -8,6 +8,7 @@ Created on Thu Jul 14 06:16:03 2022
 import numpy as np
 import pandas as pd
 import emotibit.info as info
+import emotibit.utils as utils
 
 data_type_tags = ["AX","EA"]
 data_min_threshes = [-7, 0.98]
@@ -24,6 +25,7 @@ file_base_names = [
 timestamp_header = "LocalTimestamp"
 
 print_info = True
+print_user_notes = True
 
 all_results = []
 
@@ -88,6 +90,12 @@ if (print_info):
     print("************")
     print("Info:")
     info.print_info(file_dir, file_base_names)
+    
+if (print_user_notes):
+    print("")
+    print("************")
+    print("User Notes:")
+    utils.print_user_notes(file_dir, file_base_names, ', ')
 
 print("")
 print("************")
