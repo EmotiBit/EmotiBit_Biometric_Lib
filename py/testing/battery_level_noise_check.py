@@ -7,6 +7,7 @@ Created on Thu Jul 14 06:16:03 2022
 
 import numpy as np
 import pandas as pd
+import emotibit.info as info
 
 data_type_tags = ["AX","EA"]
 data_min_threshes = [-7, 0.98]
@@ -19,8 +20,10 @@ file_base_names = [
  "2022-07-18_16-37-26-372411",\
  "2022-07-18_18-09-54-431729"\
  ]
-
+    
 timestamp_header = "LocalTimestamp"
+
+print_info = True
 
 all_results = []
 
@@ -79,13 +82,18 @@ for f in range(len(file_base_names)):
         + ", " + str(wonkout_type_tag)
     all_results.append(result)
     print(result)
+    
+if (print_info):
+    print("")
+    print("************")
+    print("Info:")
+    info.print_info(file_dir, file_base_names)
+
 print("")
+print("************")
 print("All Results:")
 for result in all_results:
     print(result)
-    
-
-    
             
         
         
