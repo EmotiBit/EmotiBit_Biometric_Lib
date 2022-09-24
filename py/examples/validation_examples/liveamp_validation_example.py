@@ -5,9 +5,11 @@ Created on Fri Sep 23 11:49:41 2022
 @author: consu
 """
 
+import pandas as pd
 import pyxdf
 import matplotlib.pyplot as plt
 import numpy as np
+import tool as bt
 
 try:
     import IPython
@@ -17,21 +19,76 @@ except:
 
 
 file_name = r'C:\priv\gd\Dropbox\CFL\EmotiBit\EmotiBit CFL Share\Science\data\measurement sensors\2022-09-21\20220921-2336.xdf'
+bandpass = [0.1, 5]
+eb_eda_amp = 5
 
-data, header = pyxdf.load_xdf(file_name)
 
-for stream in data:
-    y = stream['time_series']
+liveamp_data, header = pyxdf.load_xdf(file_name)
 
-    if isinstance(y, list):
-        # list of strings, draw one vertical line for each marker
-        for timestamp, marker in zip(stream['time_stamps'], y):
-            plt.axvline(x=timestamp)
-            print(f'Marker "{marker[0]}" @ {timestamp:.2f}s')
-    elif isinstance(y, np.ndarray):
-        # numeric data, draw as lines
-        plt.plot(stream['time_stamps'], y)
-    else:
-        raise RuntimeError('Unknown stream format')
+# for stream in liveamp_data:
+#     y = stream['time_series']
+
+#     if isinstance(y, list):
+#         # list of strings, draw one vertical line for each marker
+#         for timestamp, marker in zip(stream['time_stamps'], y):
+#             plt.axvline(x=timestamp)
+#             print(f'Marker "{marker[0]}" @ {timestamp:.2f}s')
+#     elif isinstance(y, np.ndarray):
+#         # numeric data, draw as lines
+#         plt.plot(stream['time_stamps'], y)
+#     else:
+#         raise RuntimeError('Unknown stream format')
+
+# plt.show()
+
+# setup twin axes
+fig, ax1 = plt.subplots()
+ax2 = ax1.twinx()
+
+
+# Plot EDA data from liveamp
+stream = liveamp_data[0]
+ts = stream['time_series']
+y = ts[:, 0] / 25000
+
+if isinstance(y, list):
+    # list of strings, draw one vertical line for each marker
+    for timestamp, marker in zip(stream['time_stamps'], y):
+        plt.axvline(x=timestamp)
+        print(f'Marker "{marker[0]}" @ {timestamp:.2f}s')
+elif isinstance(y, np.ndarray):
+    # numeric data, draw as lines
+    y = bt.band_filter(y, np.array(bandpass), 250, order=4)
+    #ax1.plot(stream['time_stamps'], y, color="red")
+    plt.plot(stream['time_stamps'], y, color="red")
+else:
+    raise RuntimeError('Unknown stream format')
+
+ax1.set_ylabel("LiveAmp", color="red", fontsize=14)
+#ax1.set_ylim()
 
 plt.show()
+
+
+
+
+# Plot emotibit eda
+file_dir = r"C:\priv\gd\Dropbox\CFL\EmotiBit\EmotiBit CFL Share\Science\data\measurement sensors\2022-09-21"
+file_base = r"2022-09-21_23-34-20-381606"
+data = []
+type_tag = "EA"
+timestamp_id = "LslMarkerSourceTimestamp"
+        
+file_path = file_dir + '\\' + file_base + '\\' + file_base + '_' + type_tag + '.csv'
+print(file_path)
+data.append(pd.read_csv(file_path))
+
+# Create time segment
+# NOTE: this only works for signals with the same sampling rate
+t = 0
+timestamps = data[t][timestamp_id].to_numpy()
+
+emotibit_eda = bt.band_filter(data[t][type_tag], np.array(bandpass), 15, order=4)
+plt.plot(timestamps, emotibit_eda*eb_eda_amp, color="black")
+#ax2.plot(timestamps, emotibit_eda, color="black")
+ax2.set_ylabel("EmotiBit",  color="black",  fontsize=14)
