@@ -18,13 +18,25 @@ except:
     plt.ion()
 
 
-file_name = r'C:\priv\gd\Dropbox\CFL\EmotiBit\EmotiBit CFL Share\Science\data\measurement sensors\2022-09-21\20220921-2336.xdf'
+liveamp_file_name = r'C:\priv\gd\Dropbox\CFL\EmotiBit\EmotiBit CFL Share\Science\data\measurement sensors\2022-09-21\20220921-2336.xdf'
+
+
+file_dir = r"C:\priv\gd\Dropbox\CFL\EmotiBit\EmotiBit CFL Share\Science\data\measurement sensors\2022-09-21"
+file_base = r"2022-09-21_23-34-20-381606"
+timestamp_id = "LslMarkerSourceTimestamp"
+
 bandpass = [0.1, 5]
 eb_eda_amp = 5
+liveamp_ind = {}
+liveamp_ind["EA"] = 0 
+liveamp_ind["AX"] = 2 
+liveamp_ind["AY"] = 3 
+liveamp_ind["AZ"] = 4 
 
 
-liveamp_data, header = pyxdf.load_xdf(file_name)
+liveamp_data, header = pyxdf.load_xdf(liveamp_file_name)
 
+# fig, ax1 = plt.subplots()
 # for stream in liveamp_data:
 #     y = stream['time_series']
 
@@ -41,15 +53,58 @@ liveamp_data, header = pyxdf.load_xdf(file_name)
 
 # plt.show()
 
+
+
+# setup twin axes
+fig, ax1 = plt.subplots(1)
+ax2 = ax1.twinx()
+# setup data containers
+liveamp_plot_data = []
+liveamp_plot_timestamps = []
+emotibit_plot_data = []
+emotibit_plot_timestamps = []
+# setup TypeTags
+type_tags = ["AX", "AY", "AZ"]
+
+for i in range(len(type_tags)):
+    #ax2.append(ax1[i].twinx())
+    #ax1[i].title.set_text(type_tags[i])
+    
+    
+    # Plot AX data from liveamp
+    stream = liveamp_data[0]
+    ts = stream['time_series']
+    if (i == 0):
+        liveamp_plot_data = np.square(ts[:, liveamp_ind[type_tags[i]]] / 1000)
+        liveamp_plot_timestamps = stream['time_stamps']
+    else:
+        liveamp_plot_data += np.square(ts[:, liveamp_ind[type_tags[i]]] / 1000)
+    
+    # Plot emotibit Accel X
+    data = []
+    t = 0
+    file_path = file_dir + '\\' + file_base + '\\' + file_base + '_' + type_tags[i] + '.csv'
+    print(file_path)
+    data.append(pd.read_csv(file_path))
+    if (i == 0):
+        emotibit_plot_data = np.square(data[t][type_tags[i]])
+        emotibit_plot_timestamps = data[t][timestamp_id].to_numpy()
+    else:
+        emotibit_plot_data += np.square(data[t][type_tags[i]])
+
+plt.plot(liveamp_plot_timestamps, liveamp_plot_data, color="red")
+ax1.set_ylabel("LiveAmp", color="red", fontsize=14)
+plt.show()
+plt.plot(emotibit_plot_timestamps, emotibit_plot_data, color="black")
+ax2.set_ylabel("EmotiBit",  color="black",  fontsize=14)
+
 # setup twin axes
 fig, ax1 = plt.subplots()
 ax2 = ax1.twinx()
-
-
 # Plot EDA data from liveamp
 stream = liveamp_data[0]
 ts = stream['time_series']
-y = ts[:, 0] / 25000
+y = ts[:, liveamp_ind["EA"]] / 25000
 
 if isinstance(y, list):
     # list of strings, draw one vertical line for each marker
@@ -71,14 +126,9 @@ plt.show()
 
 
 
-
-# Plot emotibit eda
-file_dir = r"C:\priv\gd\Dropbox\CFL\EmotiBit\EmotiBit CFL Share\Science\data\measurement sensors\2022-09-21"
-file_base = r"2022-09-21_23-34-20-381606"
-data = []
-type_tag = "EA"
-timestamp_id = "LslMarkerSourceTimestamp"
-        
+# Plot EmotiBit EDA 
+type_tag = "EA"    
+data = []   
 file_path = file_dir + '\\' + file_base + '\\' + file_base + '_' + type_tag + '.csv'
 print(file_path)
 data.append(pd.read_csv(file_path))
@@ -92,3 +142,4 @@ emotibit_eda = bt.band_filter(data[t][type_tag], np.array(bandpass), 15, order=4
 plt.plot(timestamps, emotibit_eda*eb_eda_amp, color="black")
 #ax2.plot(timestamps, emotibit_eda, color="black")
 ax2.set_ylabel("EmotiBit",  color="black",  fontsize=14)
+
