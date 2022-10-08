@@ -12,13 +12,29 @@ import numpy as np
 import tool as bt
 import scipy as scp
 import statistics as stats
-import math
+import emotibit.utils as ebu
 
 try:
     import IPython
     IPython.get_ipython().magic("matplotlib qt")
 except:
     plt.ion()
+
+import matplotlib    
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
+axes_font_size = 20
+label_font_size = 28
+plt.rcParams.update({'font.size': axes_font_size})
+plt.rcParams.update({'axes.labelsize': label_font_size})
+plt.rcParams.update({'axes.labelweight': 'bold'})
+plt.rcParams.update({'figure.autolayout': False})
+fig_size = [[[0]*2]*3]*2
+fig_size[1][1] = [15, 5.5]
+fig_size[1][2] = [15, 12]
+
+auto_save_figs = True
+fig_save_dir = r"C:\priv\gd\Dropbox\CFL\EmotiBit\EmotiBit CFL Share\Science\Manuscripts\Measurement - Sensors\figures"
 
 #fs_la = 250
 fs_la = {}
@@ -44,6 +60,8 @@ fs_eb["PI"] = 100
 # liveamp_ind["AY"] = [0, 2] 
 # liveamp_ind["AZ"] = [0, 3] 
 # liveamp_ind["ECG"] = [1, 0] 
+# ylim_edr_eb = []
+# ylim_edr_la = []
 
 # EDA + Accel files
 liveamp_file_name = r'C:\priv\gd\Dropbox\CFL\EmotiBit\EmotiBit CFL Share\Science\data\measurement sensors\2022-09-21\20220921-2336.xdf'
@@ -54,10 +72,14 @@ liveamp_ind["EA"] = [0, 0]
 liveamp_ind["AX"] = [0, 2] 
 liveamp_ind["AY"] = [0, 3] 
 liveamp_ind["AZ"] = [0, 4]
+ylim_edr_eb = [-.13, .13]
+ylim_edr_la = [-.75, .75]
 
+fig_save_dir = fig_save_dir + "/" + file_base
 
 trim_durations = [30, 30]
 simple_xdf_plot = 0
+
 
 timestamp_id = "LslMarkerSourceTimestamp"
 
@@ -74,7 +96,7 @@ def trim_data(data, timestamps, fs, trim_durations = [0, 0]):
     
 
 def regression_plots(x, y, title = "", xlabel = "", ylabel = "", ylim = []):
-    
+       
     plot_data_eb = x["data"]
     plot_timestamps_eb = x["timestamps"]
     plot_data_la = y["data"]
@@ -101,7 +123,7 @@ def regression_plots(x, y, title = "", xlabel = "", ylabel = "", ylim = []):
     
     # Plot resampled overlapping data
     fig, ax = plt.subplots(2)
-    if (("ylim" in x.keys()) and ("ylim" in y.keys())): # twin plot
+    if "ylim" in x.keys() and "ylim" in y.keys():
         # setup twin axes
         ax2 = ax[0].twinx()
     else:
@@ -115,6 +137,7 @@ def regression_plots(x, y, title = "", xlabel = "", ylabel = "", ylim = []):
         ax2.set_ylim(x["ylim"])
     ax[0].legend()
     ax2.legend(loc='lower right')
+    ax[0].legend(loc='best')
     ax[0].set_xlabel(xlabel)
     ax[0].set_ylabel(ylabel)
     if (len(ylim) == 2):
@@ -156,6 +179,7 @@ def regression_plots(x, y, title = "", xlabel = "", ylabel = "", ylim = []):
     if (len(ylim) == 2):
         ax[0].set_ylim(ylim)
     fig.suptitle(title)
+    fig.set_size_inches(fig_size[1][2])
     
 
 liveamp_data, header = pyxdf.load_xdf(liveamp_file_name)
@@ -229,9 +253,9 @@ plot_data_la, plot_timestamps_la = trim_data(plot_data_la, plot_timestamps_la, f
 
 
 ax1.plot(plot_timestamps_la, plot_data_la, color="red")
-ax1.set_ylabel("Brain Products", color="red", fontsize=14)
+ax1.set_ylabel("Brain Products", color="red", fontsize=label_font_size)
 ax2.plot(plot_timestamps_eb, plot_data_eb, color="black")
-ax2.set_ylabel("EmotiBit",  color="black",  fontsize=14)
+ax2.set_ylabel("EmotiBit",  color="black",  fontsize=label_font_size)
 ax1.set_xlabel("Time (seconds)")
 plt.show()
 
@@ -247,7 +271,12 @@ reg_data_y["timestamps"] = plot_timestamps_la
 
 regression_plots(reg_data_x, reg_data_y, title="Accelerometer", 
                  xlabel="Time (seconds)", ylabel="Acceleration (G)",
-                 ylim=[0, 2])
+                 ylim=[.5, 1.5])
+
+fig = plt.gcf()
+fig.canvas.set_window_title("Accelerometer_BP_EB_regr")
+if auto_save_figs:
+    ebu.save_fig(fig_save_dir)
 
 #######################################################
 # EDA 
@@ -263,7 +292,7 @@ plot_timestamps_la = stream['time_stamps']
 plot_data_la = stream['time_series'][:, liveamp_ind[type_tag][1]] / 25000 # uS / 25000 mV for Brain Products
 plot_data_la, plot_timestamps_la = trim_data(plot_data_la, plot_timestamps_la, fs_la[type_tag], trim_durations) 
 plt.plot(plot_timestamps_la, plot_data_la, color="red")
-ax2.set_ylabel("Brain Products", color="red", fontsize=14)
+ax2.set_ylabel("Brain Products", color="red", fontsize=label_font_size)
 
 # Plot EmotiBit EDA 
 type_tag = "EA"    
@@ -279,7 +308,7 @@ plot_data_eb = data[t][type_tag]
 # Trim beginning / end of data to remove junk & sync taps
 plot_data_eb, plot_timestamps_eb = trim_data(plot_data_eb, plot_timestamps_eb, fs_eb[type_tag], trim_durations) 
 plt.plot(plot_timestamps_eb, plot_data_eb, color="black")
-ax1.set_ylabel("EmotiBit",  color="black",  fontsize=14)
+ax1.set_ylabel("EmotiBit",  color="black",  fontsize=label_font_size)
 ax1.set_xlabel("Time (seconds)")
 plt.show()
 
@@ -295,25 +324,41 @@ reg_data_y["data"] = plot_data_la
 reg_data_y["timestamps"] = plot_timestamps_la
 reg_data_y["ylim"] = [3.5, 5.6]
 
-regression_plots(reg_data_x, reg_data_y, title="EDA", xlabel="Time (seconds)", ylabel="EDA (uSiemens)")
+regression_plots(reg_data_x, reg_data_y, title="EDA", xlabel="Time (seconds)", ylabel="EDA (µSiemens)")
+
+fig = plt.gcf()
+fig.canvas.set_window_title("EDA_BP_EB_regr")
+if auto_save_figs:
+    ebu.save_fig(fig_save_dir)
 
 # Bandpass filter EDA
 plot_data_eb = bt.band_filter(plot_data_eb, np.array(eda_bandpass), fs_eb[type_tag], order=4)
 plot_data_la = bt.band_filter(plot_data_la, np.array(eda_bandpass), fs_la[type_tag], order=4)
 # Remove filter artifact (3x duration of bandpass[0])
 reg_data_x["data"], reg_data_x["timestamps"] = trim_data(plot_data_eb, plot_timestamps_eb, fs_eb[type_tag], [4/eda_bandpass[0], 4/eda_bandpass[0]]) 
-reg_data_x["ylim"] = [-.15, .15]
+if len(ylim_edr_eb) > 1:
+    reg_data_x["ylim"] = ylim_edr_eb
+else:
+    reg_data_x.pop("ylim")
 reg_data_y["data"], reg_data_y["timestamps"] = trim_data(plot_data_la, plot_timestamps_la, fs_la[type_tag], [4/eda_bandpass[0], 4/eda_bandpass[0]]) 
-reg_data_y["ylim"] = [-.75, .75]
+if len(ylim_edr_la) > 1:
+    reg_data_y["ylim"] = ylim_edr_la
+else:
+    reg_data_y.pop("ylim")
 
 regression_plots(reg_data_x, reg_data_y, 
                  title="EDR (EDA Filtered {:.1f}".format(eda_bandpass[0]) + "-{:.1f}Hz)".format(eda_bandpass[1])
-                 , xlabel="Time (seconds)", ylabel="EDR (uSiemens)")
+                 , xlabel="Time (seconds)", ylabel="EDR (µSiemens)")
+
+fig = plt.gcf()
+fig.canvas.set_window_title("EDA_filt_BP_EB_regr")
+if auto_save_figs:
+    ebu.save_fig(fig_save_dir)
 
 #######################################################
 # Heart Rate 
 #######################################################
-if (0):
+if "ECG" in liveamp_ind.keys():
     # setup twin axes
     fig, ax1 = plt.subplots()
     ax2 = ax1.twinx()
@@ -329,10 +374,10 @@ if (0):
     plot_data_la = bt.band_filter(plot_data_la, np.array(ecg_bandpass), fs_la[type_tag], order=4)
     plot_data_la, plot_timestamps_la = trim_data(plot_data_la, plot_timestamps_la, fs_la[type_tag], [5/ecg_bandpass[0], 5/ecg_bandpass[0]])
     ax1.plot(plot_timestamps_la, plot_data_la, color="red")
-    ax1.set_ylabel("Brain Products (ECG)", color="red", fontsize=14)
+    ax1.set_ylabel("Brain Products (ECG)", color="red", fontsize=label_font_size)
     # Detect Peaks
     peaks_la, _ = scp.signal.find_peaks(plot_data_la, 0.015)
-    ax1.plot(plot_timestamps_la[peaks_la], plot_data_la[peaks_la], "o", color="red")
+    ax1.plot(plot_timestamps_la[peaks_la], plot_data_la[peaks_la], "*", color="red")
     
     # EmotiBit 
     type_tag = "PI"    
@@ -351,9 +396,10 @@ if (0):
     ax2.plot(plot_timestamps_eb, plot_data_eb, color="black")
     # Detect Peaks
     peaks_eb, _ = scp.signal.find_peaks(plot_data_eb, 75, None, fs_eb[type_tag] / 2)
-    ax2.plot(plot_timestamps_eb[peaks_eb], plot_data_eb[peaks_eb], "o", color="black")
-    ax2.set_ylabel("EmotiBit (PPG)", color="black", fontsize=14)
+    ax2.plot(plot_timestamps_eb[peaks_eb], plot_data_eb[peaks_eb], "*", color="black")
+    ax2.set_ylabel("EmotiBit (PPG)", color="black", fontsize=label_font_size)
     ax1.set_xlabel("Time (seconds)")
+    ax1.set_xlim([51150.103932117956, 51154.201822153096]) # zoom in on peaks
     plt.show()
     
     # setup twin axes
@@ -373,15 +419,26 @@ if (0):
     plot_timestamps_eb = plot_timestamps_eb[peaks_eb[0:len(peaks_eb)-1]]
     plt.show()
     
+    fig = plt.gcf()
+    fig.set_size_inches(fig_size[1][1])
+    fig.canvas.set_window_title("ECG_PPG_BP_EB")
+    if auto_save_figs:
+        ebu.save_fig(fig_save_dir)
+    
     reg_data_x = {}
     reg_data_x["label"] = "EmotiBit"
     reg_data_x["data"] = hr_eb
     reg_data_x["timestamps"] = plot_timestamps_eb
     
     reg_data_y = {}
-    reg_data_y["label"] = "Brain Products"
+    reg_data_y["label"] = "Brain Products HR"
     reg_data_y["data"] = hr_la
     reg_data_y["timestamps"] = plot_timestamps_la
     
     regression_plots(reg_data_x, reg_data_y, 
                      title="Heart Rate", xlabel="Time (seconds)", ylabel="Heart Rate (BPM)")
+    
+    fig = plt.gcf()
+    fig.canvas.set_window_title("HR_BP_EB_regr")
+    if auto_save_figs:
+        ebu.save_fig(fig_save_dir)

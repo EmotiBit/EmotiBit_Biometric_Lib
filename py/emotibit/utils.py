@@ -13,6 +13,7 @@ Created on Wed Jul 20 06:14:05 2022
 
 
 import pandas as pd
+import matplotlib.pyplot as plt
 
 def print_user_notes(file_dir = "", file_base_names = "", delim = ", "):
     """
@@ -34,4 +35,18 @@ def print_user_notes(file_dir = "", file_base_names = "", delim = ", "):
         if (f < len(file_base_names) - 1): # Don't add an extra \n
             output = output + '\n'
     print(output)
-        
+def save_fig(save_dir = "", _dpi = 300):
+    import os
+    import pickle
+    fig = plt.gcf()
+    title = fig.canvas.get_window_title()
+    if save_dir == "":
+        save_dir = os.getcwd()
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    plt.savefig(save_dir + "/" + title + ".png", transparent=False, dpi = _dpi)
+    plt.savefig(save_dir + "/" + title + ".pdf", transparent=True, dpi = _dpi)
+    with open(save_dir + "/" + title + ".fig", 'wb') as f:
+        # pickle.dump(fig, open('FigureObject.fig.pickle', 'wb', f))
+        pickle.dump(fig, f)
+        # open with pickle.load(open('FigureObject.fig.pickle', 'rb'))
