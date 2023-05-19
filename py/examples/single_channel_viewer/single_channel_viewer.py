@@ -11,18 +11,16 @@ import tkinter
 import tkinter.simpledialog as simpledialog
 import os
 import csv
-#basepath = pathlib.Path("D:\dev\CFL\EmotiBit\data analysis\data_xenbox\Data-20230511T212157Z-001\Data")
-# python channel_viewer -t EA -data_paths {name:Mike, dir_paths:path1, path2} # path1=directory holding parsed files
-# python channel_viewer -t EA -root_dir path
+
 typetag = 'EA' # common to all people
+# select the directory where the output will be stored.
+output_dir = r'D:\dev\CFL\EmotiBit\data analysis\data_xenbox\Data-20230511T212157Z-001\Data'
+# change the output notes file name if required
+output_file_path = os.path.join(output_dir, 'user_notes.csv')
+
+#update the following dictionary where all the data can be found
+# Currently, keep all the files from a single person under 1 directory. sub-directories are allowed
 database = [
-    # {
-    #  'name':"AJ", # plotname
-    #  'root_path':[r'D:\dev\CFL\EmotiBit\data analysis\data_xenbox\Data-20230511T212157Z-001\Data\AJ'], #dir_paths
-    #  #'filepahts':[r'path/to/file1_<typetag>.csv',r'path/to/file2_<typetag>.csv'],
-    #  'data':pd.DataFrame()
-    #  'data':[pd.DataFrame()] have different dataframes in different objects
-    #  },
     {
      'name':"Bob",
      'root_path':r'D:\dev\CFL\EmotiBit\data analysis\data_xenbox\Data-20230511T212157Z-001\Data\Bob',
@@ -48,9 +46,9 @@ database = [
      'root_path':r'D:\dev\CFL\EmotiBit\data analysis\data_xenbox\Data-20230511T212157Z-001\Data\Mike',
      'data':pd.DataFrame()
      }]
-output_dir = r'D:\dev\CFL\EmotiBit\data analysis\data_xenbox\Data-20230511T212157Z-001\Data'
-output_file_path = os.path.join(output_dir, 'user_notes.csv')
-#%% Read all files into a dataframe
+
+
+#%% Read all files into dataframes
 x_axis_col = 'LslMarkerSourceTimestamp'
 #x_axis_col = 'LocalTimestamp'
 for db_i in range(len(database)):
@@ -81,6 +79,7 @@ notes_df = pd.DataFrame(columns=user_note_headers)
 notes_file = pathlib.Path(output_file_path)
 if not notes_file.is_file():
     notes_df.to_csv(output_file_path, mode='a', index=False)
+
 #%% callback functions
 def on_click(event):
     print('x-axis: ' + str(event.xdata))
@@ -101,12 +100,10 @@ def on_key(event):
         if w != None:
             print(str(global_x_loc) + ":" + w)
             df_row = list(database[global_subplot_clicked]['data'].iloc[(database[global_subplot_clicked]['data'][x_axis_col] - global_x_loc).abs().argsort()[0],:])
-
             df_row[-1] = w
             with open (output_file_path, 'a', newline='') as f:
                 writer = csv.writer(f)
                 writer.writerow(df_row)
-            #notes.to_csv(output_file_path, mode='a',header=False, index=False)
 
 #%% plot data into 1 plot
 num_plots = len(database)
