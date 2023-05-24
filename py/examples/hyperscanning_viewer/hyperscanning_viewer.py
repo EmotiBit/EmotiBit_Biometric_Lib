@@ -2,7 +2,7 @@
 """
 hyperscanning_viewer.py
 Plots EmotiBit data from multiple people and multiple data files per person.
-Change usage parameter so match desired inputs and run. 
+Change usage parameter in specified section to match desired inputs and run. 
 
 Utilize the pan, zoom
 and home/reset buttons to traverse data. 
