@@ -1,8 +1,32 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri May 12 15:37:34 2023
+hyperscanning_viewer.py
+Plots EmotiBit data from multiple people and multiple data files per person.
+Change usage parameter so match desired inputs and run. 
 
-@author: nitin
+Utilize the pan, zoom
+and home/reset buttons to traverse data. 
+
+The following keystrokes provide
+additional functionality:
+    'c': Creates a comment entry for storage in an output note file. Note the
+        the timestamp corresponds the x-position clicked before hitting 'c'.
+    'a': Automatically rescales the y-limits. At present a mouse click is
+        required after pressing 'a' to update the QT plot engine.
+    't': Transposes the subplots, swapping plot rows and columns. Note this 
+        presently breaks the home/reset button.
+    'r': Resets the figure. 
+    
+ToDo:
+    - Remove click requirement for 'a' functionality
+    - Separate the example code from the functions
+    - Fix home functionality after 't'
+    - Consider making click after 'c' select time
+    - Add vertical like at click on all plots
+
+Created on Fri May 24 15:37:34 2023
+
+@author: produceconsumerobot
 """
 import pathlib
 import pandas as pd
@@ -19,6 +43,7 @@ try:
 except:
     plt.ion()
 
+# **** Set usage parameters here ****
     
 fig_size = [15, 12]
 typetags_in_cols = False
@@ -56,6 +81,8 @@ database = [
      'root_path':r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data/Diane',
      }
     ]
+
+# **** END usage parameters ****
 
 # change the output notes file name if required
 output_file_path = os.path.join(output_dir, output_note_typetag + '.csv')
