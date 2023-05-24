@@ -20,7 +20,7 @@ except:
     plt.ion()
 
 fig_size = [15, 12]
-typetag = 'EA' # common to all people
+typetag = 'D0' # common to all people
 # select the directory where the output will be stored.
 output_dir = r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data'
 # change the output notes file name if required
@@ -62,7 +62,7 @@ x_axis_col = 'LslMarkerSourceTimestamp'
 for db_i in range(len(database)):
     print('-->' + database[db_i]['name'])
     basepath = pathlib.Path(database[db_i]['root_path'])
-    file_list = list(basepath.rglob("*EA*"))
+    file_list = list(basepath.rglob("*" + typetag + "*"))
     filepath_list = []
     for file in file_list:
         print(file.stem)
@@ -78,16 +78,17 @@ for db_i in range(len(database)):
         else:
             print(filepath.split('//')[-1] + ": " + x_axis_col +' not present. discarding.')
 
+print('data loading complete...')
 global_x_loc = 0
 global_comment = ""
 global_subplot_clicked = 0
 user_note_headers = list(database[0]['data'].columns)
-user_note_headers[-1] = 'UserNote'
+user_note_headers[-1] = 'AnalysisNote'
 notes_df = pd.DataFrame(columns=user_note_headers)
 notes_file = pathlib.Path(output_file_path)
 if not notes_file.is_file():
     notes_df.to_csv(output_file_path, mode='a', index=False)
-    
+
 def auto_y_lim():
     for db_i in range(len(database)):
         print('subplot {0}/{1}'.format(db_i, len(axes) - 1))
