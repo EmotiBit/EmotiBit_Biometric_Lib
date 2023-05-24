@@ -9,12 +9,20 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import tkinter
 import tkinter.simpledialog as simpledialog
+import numpy as np
 import os
 import csv
 
+try:
+    import IPython
+    IPython.get_ipython().magic("matplotlib qt")
+except:
+    plt.ion()
+
+fig_size = [15, 12]
 typetag = 'EA' # common to all people
 # select the directory where the output will be stored.
-output_dir = r'D:\dev\CFL\EmotiBit\data analysis\data_xenbox\Data-20230511T212157Z-001\Data'
+output_dir = r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data'
 # change the output notes file name if required
 output_file_path = os.path.join(output_dir, 'user_notes.csv')
 
@@ -23,27 +31,27 @@ output_file_path = os.path.join(output_dir, 'user_notes.csv')
 database = [
     {
      'name':"Bob",
-     'root_path':r'D:\dev\CFL\EmotiBit\data analysis\data_xenbox\Data-20230511T212157Z-001\Data\Bob',
+     'root_path':r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data/Bob',
      'data':pd.DataFrame()
      },
     {
      'name':"Diane",
-     'root_path':r'D:\dev\CFL\EmotiBit\data analysis\data_xenbox\Data-20230511T212157Z-001\Data\Diane',
+     'root_path':r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data/Diane',
      'data':pd.DataFrame()
      },
     {
      'name':"Jared",
-     'root_path':r'D:\dev\CFL\EmotiBit\data analysis\data_xenbox\Data-20230511T212157Z-001\Data\Jared',
+     'root_path':r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data/Jared',
      'data':pd.DataFrame()
      },
     {
      'name':"John",
-     'root_path':r'D:\dev\CFL\EmotiBit\data analysis\data_xenbox\Data-20230511T212157Z-001\Data\John',
+     'root_path':r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data/John',
      'data':pd.DataFrame()
      },
     {
      'name':"Mike",
-     'root_path':r'D:\dev\CFL\EmotiBit\data analysis\data_xenbox\Data-20230511T212157Z-001\Data\Mike',
+     'root_path':r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data/Mike',
      'data':pd.DataFrame()
      }]
 
@@ -63,12 +71,12 @@ for db_i in range(len(database)):
         temp = pd.read_csv(filepath)
         if x_axis_col in temp.columns:
             if(0 in temp[x_axis_col].unique()):
-                print(filepath.split('\\')[-1] + ": " + x_axis_col +' timestamp missing. discarding.')
+                print(filepath.split('//')[-1] + ": " + x_axis_col +' timestamp missing. discarding.')
             else:
-                print(filepath.split('\\')[-1] + ': good file')
+                print(filepath.split('//')[-1] + ': good file')
                 database[db_i]['data'] = database[db_i]['data'].append(temp)
         else:
-            print(filepath.split('\\')[-1] + ": " + x_axis_col +' not present. discarding.')
+            print(filepath.split('//')[-1] + ": " + x_axis_col +' not present. discarding.')
 
 global_x_loc = 0
 global_comment = ""
@@ -79,6 +87,33 @@ notes_df = pd.DataFrame(columns=user_note_headers)
 notes_file = pathlib.Path(output_file_path)
 if not notes_file.is_file():
     notes_df.to_csv(output_file_path, mode='a', index=False)
+    
+def auto_y_lim():
+    for db_i in range(len(database)):
+        print('subplot {0}/{1}'.format(db_i, len(axes) - 1))
+        x_lims = axes[db_i].get_xlim()
+        print('x_lims = ', x_lims)
+        
+        # Find the indexes of the x limits
+        x_data_arr = np.array(database[db_i]['data'][x_axis_col])
+        x_inds = np.where((x_data_arr > x_lims[0]) & (x_data_arr < x_lims[1]))[0]
+        if (len(x_inds) > 1): # Don't try to plot missing data
+            x_inds = np.sort(x_inds)
+            x_inds = range(x_inds[0], x_inds[len(x_inds) - 1])
+            print('x_inds = ', x_inds[0], x_inds[len(x_inds) - 1])
+            
+            #print('len(data) = ', len(database[db_i]['data'][typetag]))
+            y_data_arr = np.array(database[db_i]['data'][typetag])
+            y_lims = [
+                min(y_data_arr[x_inds]),
+                max(y_data_arr[x_inds])
+                ]
+            print('y_lims = ', y_lims[0], y_lims[1])
+            
+            #axes[db_i].set_ylim(y_lims[0], y_lims[1])
+            axes[db_i].update({'ylim': [y_lims[0], y_lims[1]]})
+            fig.canvas.blit(fig.bbox)
+                
 
 #%% callback functions
 def on_click(event):
@@ -87,10 +122,9 @@ def on_click(event):
     global_x_loc = event.xdata
     for i in range(len(axes)):
         if event.inaxes == axes[i]:
-            print('you clicked {0}/{1} subplot'.format(i,len(axes)))
+            print('you clicked {0}/{1} subplot'.format(i, len(axes) - 1))
             global_subplot_clicked = i
-
-
+            
 def on_key(event):
     print('Key press:\'%s\'' %(event.key))
     if event.key == 'c':
@@ -104,10 +138,55 @@ def on_key(event):
             with open (output_file_path, 'a', newline='') as f:
                 writer = csv.writer(f)
                 writer.writerow(df_row)
+    if event.key == 'a':
+        auto_y_lim()
+    if event.key == 'w': # zoom out of plot (wide)
+        print('subplot {0}/{1}'.format(0, len(axes) - 1))
+        x_lims = axes[0].get_xlim()
+        x_diff = x_lims[1] - x_lims[0]
+        x_mean = (x_lims[1] + x_lims[0]) / 2
+        x_lims = [x_mean - x_diff, x_mean + x_diff] # expand xlims by 2x
+        print('x_lims = ', x_lims)
+        for db_i in range(len(database)):
+            axes[db_i].update({'xlim': [x_lims[0], x_lims[1]]})
+        auto_y_lim()
+    if event.key == 'z': # zoom in to plot
+        print('subplot {0}/{1}'.format(0, len(axes) - 1))
+        x_lims = axes[0].get_xlim()
+        x_diff = x_lims[1] - x_lims[0]
+        x_mean = (x_lims[1] + x_lims[0]) / 2
+        x_lims = [x_mean - x_diff / 4, x_mean + x_diff / 4] # expand xlims by 2x
+        print('x_lims = ', x_lims)
+        for db_i in range(len(database)):
+            axes[db_i].update({'xlim': [x_lims[0], x_lims[1]]})
+        auto_y_lim() 
+    if event.key == 'g': # Go forward in plot time
+        print('subplot {0}/{1}'.format(0, len(axes) - 1))
+        x_lims = axes[0].get_xlim()
+        x_diff = x_lims[1] - x_lims[0]
+        x_mean = (x_lims[1] + x_lims[0]) / 2
+        x_mean = x_mean + x_diff / 4
+        x_lims = [x_mean - x_diff / 2, x_mean + x_diff / 2] # expand xlims by 2x
+        print('x_lims = ', x_lims)
+        for db_i in range(len(database)):
+            axes[db_i].update({'xlim': [x_lims[0], x_lims[1]]})
+        auto_y_lim() 
+    if event.key == 'b': # move backward in plot time
+        print('subplot {0}/{1}'.format(0, len(axes) - 1))
+        x_lims = axes[0].get_xlim()
+        x_diff = x_lims[1] - x_lims[0]
+        x_mean = (x_lims[1] + x_lims[0]) / 2
+        x_mean = x_mean - x_diff / 4
+        x_lims = [x_mean - x_diff / 2, x_mean + x_diff / 2] # expand xlims by 2x
+        print('x_lims = ', x_lims)
+        for db_i in range(len(database)):
+            axes[db_i].update({'xlim': [x_lims[0], x_lims[1]]})
+        auto_y_lim() 
 
 #%% plot data into 1 plot
 num_plots = len(database)
 fig, axes = plt.subplots(num_plots,1, sharex=True) # creates number of subplots equal to entries in the database
+fig.set_size_inches(fig_size)
 
 fig.canvas.mpl_connect('key_press_event', on_key)
 plt.connect('button_press_event', on_click)
@@ -115,6 +194,9 @@ fig.suptitle( 'Data channel: '+ typetag)
 for db_i in range(len(database)):
     if(x_axis_col in database[db_i]['data'].columns):
         #axes[db_i].title.set_text(database[db_i]['name'])
-        line, = axes[db_i].plot(database[db_i]['data'][x_axis_col], database[db_i]['data']['EA'], label=database[db_i]['name'])
-        axes[db_i].legend()
+        line, = axes[db_i].plot(database[db_i]['data'][x_axis_col], database[db_i]['data'][typetag], label=database[db_i]['name'])
+        #axes[db_i].legend()
+        #axes[db_i].yaxis.set_label_position("right")
+        #axes[db_i].set_ylabel(database[db_i]['name'])
+        axes[db_i].set_title(database[db_i]['name'])
 plt.show()
