@@ -20,7 +20,7 @@ except:
     plt.ion()
 
 fig_size = [15, 12]
-typetag = 'D0' # common to all people
+typetag = 'EA' # common to all people
 # select the directory where the output will be stored.
 output_dir = r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data'
 # change the output notes file name if required

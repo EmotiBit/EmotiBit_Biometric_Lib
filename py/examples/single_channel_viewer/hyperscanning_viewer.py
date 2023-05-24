@@ -19,14 +19,18 @@ try:
 except:
     plt.ion()
 
+    
 fig_size = [15, 12]
-typetags = ['D0','EA','AX','PI'] # common to all people
-marker_styles = ['*','-','-','-']
 typetags_in_cols = False
 output_note_typetag = 'analysis_notes'
 
 # select the directory where the output will be stored.
 output_dir = r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data'
+
+signals = {
+    'typetags': ['TH','T1','D0','AX','EA'],
+    'marker_styles': ['-','-','*','-','-']
+    }
 
 #update the following dictionary where all the data can be found
 # Currently, keep all the files from a single person under 1 directory. sub-directories are allowed
@@ -34,27 +38,22 @@ database = [
     {
      'name':"Mike",
      'root_path':r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data/Mike',
-     #'data':pd.DataFrame()
      },
     {
      'name':"Bob",
      'root_path':r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data/Bob',
-     #'data':pd.DataFrame()
      },
     {
      'name':"Jared",
      'root_path':r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data/Jared',
-     #'data':pd.DataFrame()
      },
     {
      'name':"John",
      'root_path':r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data/John',
-     #'data':pd.DataFrame()
      },
     {
      'name':"Diane",
      'root_path':r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data/Diane',
-     #'data':pd.DataFrame()
      }
     ]
 
@@ -63,9 +62,9 @@ output_file_path = os.path.join(output_dir, output_note_typetag + '.csv')
 
 if (typetags_in_cols):
     num_rows = len(database)
-    num_cols = len(typetags)
+    num_cols = len(signals['typetags'])
 else:
-    num_rows = len(typetags)
+    num_rows = len(signals['typetags'])
     num_cols = len(database)
 
 fig, axes = plt.subplots(num_rows,num_cols, sharex=True) # creates number of subplots equal to entries in the database
@@ -76,7 +75,7 @@ x_axis_col = 'LslMarkerSourceTimestamp'
 #x_axis_col = 'LocalTimestamp'
 for db_i in range(len(database)):
     database[db_i]['data'] = {}
-    for typetag in typetags:
+    for typetag in signals['typetags']:
         print('-->' + database[db_i]['name'])
         basepath = pathlib.Path(database[db_i]['root_path'])
         file_list = list(basepath.rglob("*" + typetag + "*"))
@@ -113,10 +112,10 @@ def auto_y_lim():
     for m in range(num_rows):
         for n in range(num_cols):
             if (typetags_in_cols):
-                typetag = typetags[n]
+                typetag = signals['typetags'][n]
                 db_i = m
             else:
-                typetag = typetags[m]
+                typetag = signals['typetags'][m]
                 db_i = n
             print('subplot {0},{1}'.format(m, n))
             x_lims = axes[m][n].get_xlim()
@@ -163,14 +162,14 @@ def plot_data():
     for m in range(num_rows):
         for n in range(num_cols):
             if (typetags_in_cols):
-                typetag = typetags[n]
-                marker_style = marker_styles[n]
+                typetag = signals['typetags'][n]
+                marker_style = signals['marker_styles'][n]
                 db_i = m
                 plot_title = typetag
                 plot_xlabel = database[db_i]['name']
             else:
-                typetag = typetags[m]
-                marker_style = marker_styles[m]
+                typetag = signals['typetags'][m]
+                marker_style = signals['marker_styles'][m]
                 db_i = n
                 plot_title = database[db_i]['name']
                 plot_xlabel = typetag
@@ -223,10 +222,15 @@ def on_key(event):
         print('typetags_in_cols = ', typetags_in_cols)
         if (typetags_in_cols):
             num_rows = len(database)
-            num_cols = len(typetags)
+            num_cols = len(signals['typetags'])
         else:
-            num_rows = len(typetags)
+            num_rows = len(signals['typetags'])
             num_cols = len(database)
+        plot_data()
+    if event.key == 'r': # reset the plot and start over
+        # this is a hack because 't' breaks home/reset
+        global xlims
+        xlims = []
         plot_data()
 
 plot_data()
