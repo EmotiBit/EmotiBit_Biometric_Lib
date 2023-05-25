@@ -16,6 +16,7 @@ additional functionality:
     't': Transposes the subplots, swapping plot rows and columns. Note this 
         presently breaks the home/reset button.
     'r': Resets the figure. 
+    ';': Adds titles and labels to each subplot 
     
 ToDo:
     - Remove click requirement for 'a' functionality
@@ -47,6 +48,7 @@ except:
     
 fig_size = [15, 12]
 typetags_in_cols = False
+label_per_plot = False
 output_note_typetag = 'analysis_notes'
 
 # select the directory where the output will be stored.
@@ -204,10 +206,10 @@ def plot_data():
                 #axes[m].title.set_text(database[db_i]['name'])
                 line, = axes[m][n].plot(database[db_i]['data'][typetag][x_axis_col], database[db_i]['data'][typetag][typetag], marker_style, label=database[db_i]['name'])
                 #axes[m].legend()
-                if (n == num_cols - 1):
+                if (label_per_plot or n == num_cols - 1):
                     axes[m][n].yaxis.set_label_position("right")
                     axes[m][n].set_ylabel(plot_xlabel)
-                if (m == 0):
+                if (label_per_plot or m == 0):
                     axes[m][n].set_title(plot_title)
             if (new_xlims):
                 xlims = axes[m][n].get_xlim()
@@ -258,6 +260,10 @@ def on_key(event):
         # this is a hack because 't' breaks home/reset
         global xlims
         xlims = []
+        plot_data()
+    if event.key == ';': # Adds titles and labels to each subplot 
+        global label_per_plot
+        label_per_plot = not label_per_plot
         plot_data()
 
 plot_data()
