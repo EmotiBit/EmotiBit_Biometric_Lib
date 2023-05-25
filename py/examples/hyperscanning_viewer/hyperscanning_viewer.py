@@ -16,7 +16,7 @@ additional functionality:
     't': [t]ransposes the subplots, swapping plot rows and columns. Note this 
         presently breaks the home/reset button.
     'r': [r]esets the figure. 
-    'e': Adds titles and labels to [e]ach subplot 
+    'e': Toggles titles and labels for [e]ach subplot 
     
 ToDo:
     - Remove click requirement for 'a' functionality
@@ -49,7 +49,7 @@ except:
     
 fig_size = [15, 12]
 typetags_in_cols = False
-label_per_plot = False
+label_each_subplot = False
 output_note_typetag = 'analysis_notes'
 
 # select the directory where the output will be stored.
@@ -207,10 +207,10 @@ def plot_data():
                 #axes[m].title.set_text(database[db_i]['name'])
                 line, = axes[m][n].plot(database[db_i]['data'][typetag][x_axis_col], database[db_i]['data'][typetag][typetag], marker_style, label=database[db_i]['name'])
                 #axes[m].legend()
-                if (label_per_plot or n == num_cols - 1):
+                if (label_each_subplot or n == num_cols - 1):
                     axes[m][n].yaxis.set_label_position("right")
                     axes[m][n].set_ylabel(plot_xlabel)
-                if (label_per_plot or m == 0):
+                if (label_each_subplot or m == 0):
                     axes[m][n].set_title(plot_title)
             if (new_xlims):
                 xlims = axes[m][n].get_xlim()
@@ -221,8 +221,9 @@ def plot_data():
     
 #%% callback functions
 def on_click(event):
-    print('x-axis: ' + str(event.xdata))
+    global global_subplot_clicked
     global global_x_loc
+    print('x-axis: ' + str(event.xdata))
     global_x_loc = event.xdata
     for i in range(len(axes)):
         if event.inaxes == axes[i]:
@@ -263,8 +264,8 @@ def on_key(event):
         xlims = []
         plot_data()
     if event.key == 'e': # Adds titles and labels to [e]ach subplot 
-        global label_per_plot
-        label_per_plot = not label_per_plot
+        global label_each_subplot
+        label_each_subplot = not label_each_subplot
         plot_data()
 
 plot_data()
