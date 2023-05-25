@@ -9,9 +9,9 @@ and home/reset buttons to traverse data.
 
 The following keystrokes provide
 additional functionality:
-    'c': [c]reates a comment entry for storage in an output note file. Note the
+    'c': Creates a [c]omment entry for storage in an output note file. Note the
         the timestamp corresponds the x-position clicked before hitting 'c'.
-    'a': [a]utomatically rescales the y-limits. At present a mouse click is
+    'a': [a]uto-rescales the y-limits. At present a mouse click is
         required after pressing 'a' to update the QT plot engine.
     't': [t]ransposes the subplots, swapping plot rows and columns. Note this 
         presently breaks the home/reset button.
