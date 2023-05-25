@@ -22,8 +22,9 @@ ToDo:
     - Remove click requirement for 'a' functionality
     - Separate the example code from the functions
     - Fix home functionality after 't'
+    - Add vertical lines at comment times and some way to see comment 
     - Consider making click after 'c' select time
-    - Add vertical like at click on all plots
+    - Add vertical line at click on all plots
 
 Created on Fri May 24 15:37:34 2023
 
