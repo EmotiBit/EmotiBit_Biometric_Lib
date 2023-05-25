@@ -9,14 +9,14 @@ and home/reset buttons to traverse data.
 
 The following keystrokes provide
 additional functionality:
-    'c': Creates a comment entry for storage in an output note file. Note the
+    'c': [c]reates a comment entry for storage in an output note file. Note the
         the timestamp corresponds the x-position clicked before hitting 'c'.
-    'a': Automatically rescales the y-limits. At present a mouse click is
+    'a': [a]utomatically rescales the y-limits. At present a mouse click is
         required after pressing 'a' to update the QT plot engine.
-    't': Transposes the subplots, swapping plot rows and columns. Note this 
+    't': [t]ransposes the subplots, swapping plot rows and columns. Note this 
         presently breaks the home/reset button.
-    'r': Resets the figure. 
-    ';': Adds titles and labels to each subplot 
+    'r': [r]esets the figure. 
+    'e': Adds titles and labels to [e]ach subplot 
     
 ToDo:
     - Remove click requirement for 'a' functionality
@@ -262,7 +262,7 @@ def on_key(event):
         global xlims
         xlims = []
         plot_data()
-    if event.key == ';': # Adds titles and labels to each subplot 
+    if event.key == 'e': # Adds titles and labels to [e]ach subplot 
         global label_per_plot
         label_per_plot = not label_per_plot
         plot_data()
