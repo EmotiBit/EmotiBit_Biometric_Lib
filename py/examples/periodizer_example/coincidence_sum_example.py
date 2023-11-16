@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jul 14 09:21:07 2023
+Example using emotibit.signal.periodizer to assess the coincidence of multiple 
+aperiodic signals and write to file a metric quantifying the coincidence.
 
 @author: consu
 """
@@ -10,7 +11,6 @@ import numpy as np
 import pandas as pd
 import scipy.signal as scisig
 import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
 
 try:
     import IPython
@@ -67,17 +67,35 @@ people = [
      'plot_color':'m'
      }
     ]
+groups = [
+    {
+     'names':['Mike'],
+     'plot_color':'r'
+    },
+    {
+     'names':['Mike', 'Bob'],
+     'plot_color':'b'
+    },
+    {
+     'names':['Mike', 'Bob', 'Jared', 'John', 'Diane'],
+     'plot_color':'g'
+    }
+    ]
 
 #data_dir = r'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data/Mike/'
 #data_file_base = '2023-04-16_15-42-05-608122'
+multiflow_output_dir = 'G:/.shortcut-targets-by-id/1KogPeL5zzT7nFPtEZ5wjIY4poPyVxgWN/EmotiBit Test Data/XenboX/XenboX at TRI 2023-04-16/Data/'
 data_typetag = 'D0'
 ref_typetag = 'EA'
 fs = 15
 # cuttoff and threshold determined to result in ~1 minute window
 #cutoff_freq = 0.33
-cutoff_freq = 0.05
-threshold = cutoff_freq / 7.5
-output_typetag = 'D0_filt' + str(cutoff_freq) + 'Hz' + '_th' + str(threshold)
+win_len = 120 # seconds
+#cutoff_freq = 0.05
+#threshold = cutoff_freq / 7.5
+threshold = 1 / win_len / fs
+#output_typetag = 'D0_filt' + str(cutoff_freq) + 'Hz' + '_th' + str(threshold)
+output_typetag = 'D0_win' + str(win_len) + 'sec'
 t_col_name = "LslMarkerSourceTimestamp"
 t_start = 405670
 t_end = 410600
@@ -104,10 +122,7 @@ if t_end < 0:
     t_ends = np.array(t_ends)
     t_end = max(t_ends[t_ends > 0])
 
-# Cycle through all data files to create coincidence sum 
-fig1, axes1 = plt.subplots(len(people),1,sharex=True)
-#ax1.clear()
-coin_sum = np.array([])
+# Cycle through all data files to create periodized data
 per_data = []
 for temp_dir in data_dirs:
     data_dir, person, data_file_base = temp_dir.rsplit('/', 2)
@@ -124,49 +139,62 @@ for temp_dir in data_dirs:
         data = pd.read_csv(data_file_path)
         
         per_data.append(ebsig.periodize(data,t_col_name,fs,t_start,0,t_end))
-        
-for i in len(per_data):
-    press = np.diff(per_data[i][data_typetag])
+    # ToDo save individual processed files        
     
-        
-        output_df = ebsig.periodize(data,t_col_name,fs,t_start,0,t_end)
-        
-        temp2 = output_df[data_typetag]
-        axes1[person_ind].plot(output_df[t_col_name], temp2, color='gold')
-        temp2 = butter_lowpass_filter(temp2, cutoff_freq, fs, order=1)
-        axes1[person_ind].plot(output_df[t_col_name], temp2, color='orange')
-        temp2 = (temp2 > threshold )* 1
-        axes1[person_ind].plot(output_df[t_col_name], temp2, color=plot_color, label=person)
-        #output_df[data_typetag] = temp2
-        if (len(coin_sum) == 0):
-            coin_sum = temp2
-        else:
-            coin_sum = coin_sum + temp2
+
+plt.clf()  
+fig1, axes1 = plt.subplots(len(people) + 1,1,sharex=True)
+fig1.suptitle('Pedal Presses (win_len=' + str(win_len) + 'sec)', fontsize=16)
+#axes1.clear()  
+coin_sum = np.array([])   
+# Cycle through all data files to create coincidence sum 
+for i in range(0, len(per_data)):
+    #data = per_data[i][data_typetag]
+    #press = np.diff(data)
+    #output_df = ebsig.periodize(data,t_col_name,fs,t_start,0,t_end)
+    temp_dir = data_dirs[i]
+    data_dir, person, data_file_base = temp_dir.rsplit('/', 2)
+    
+    person_ind = -1
+    temp_ind = -1
+    for p in people:
+        temp_ind = temp_ind + 1
+        if p['name'] == person:
+            person_ind = temp_ind
+            plot_color = p['plot_color']
+    
+    output_df = per_data[i]
+    temp2 = output_df[data_typetag]
+    #axes1[person_ind].plot(temp2, color='gold')
+    axes1[person_ind].plot(output_df[t_col_name], temp2, color='gold')
+    #win_m = int(fs / cutoff_freq / 2) * 2 + 1 # create a window size that's not a mult of 2
+    win_m = int(win_len / 2) * 2 + 1 # create a window size that's not a mult of 2
+    temp2 = np.convolve(temp2, np.ones(win_m) / win_m)
+    temp2 = temp2[range(int(win_m / 2), len(temp2) - int(win_m / 2))]
+    #temp2 = butter_lowpass_filter(temp2, cutoff_freq, fs, order=1)
+    #axes1[person_ind].plot( temp2, color='orange')
+    axes1[person_ind].plot(output_df[t_col_name], temp2, color='orange')
+    temp2 = (temp2 > threshold )* 1
+    #axes1[person_ind].plot(temp2, color=plot_color, label=person)
+    axes1[person_ind].plot(output_df[t_col_name], temp2, color=plot_color)
+    axes1[person_ind].set_ylabel(person)
+    #output_df[data_typetag] = temp2
+    if (len(coin_sum) == 0):
+        coin_sum = temp2
+    else:
+        coin_sum = coin_sum + temp2
             
     #output_file_path = data_dir + data_file_base + '/' + data_file_base + '_' + output_typetag + '.csv'
     #output_df.to_csv(output_file_path, index=False)
             
+axes1[len(people)].plot(per_data[0][t_col_name], coin_sum, 'gray')
+axes1[len(people)].set_ylim(0, len(people))
+axes1[len(people)].set_ylabel('Multi-Flow')
 
+multiflow_data = per_data[0]
+multiflow_data[data_typetag] = coin_sum
+output_file_path = multiflow_output_dir + '/' + 'MultiFlow_All' + '_' + output_typetag + '.csv'
+multiflow_data.to_csv(output_file_path, index=False)
 
+output_df.to_csv(output_file_path, index=False)
 
-
-plt.plot(coin_sum, linestyle=(0, (1, 10)), marker='*', color='gray', label='multi-flow')
-ax1.set_ylim([-0.1, max(coin_sum) + 0.1])
-ax1.legend()
-plt.title('Pedal-presses: ' + output_typetag)
-
-coin_hist_w, coin_hist_b = np.histogram(coin_sum, bins=max(coin_sum)+1, range=[-.5, max(coin_sum)+0.5])
-coin_hist_w = coin_hist_w / fs / 60
-#plt.figure(2)
-ax2 = plt.subplot(2,1,2)
-ax2.clear()
-plt.plot(coin_hist_b[1:]-0.5, coin_hist_w, linestyle=(0, (1, 10)), marker='*', color='gray')
-plt.gca().xaxis.set_major_locator(mticker.MultipleLocator(1))
-#plt.hist(coin_hist_b[:-1], coin_hist_b, weights=coin_hist_w)
-#plt.title('Minutes of pedal-press coincidence')
-plt.xlabel('# of people simultaneously pressing pedal')
-plt.ylabel('minutes')
-
-
-    #output_file_path = data_dir + data_file_base + '/' + data_file_base + '_' + output_typetag + '.csv'
-    #output_df.to_csv(output_file_path, index=False)
