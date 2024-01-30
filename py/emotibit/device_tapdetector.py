@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import argparse
 
 def load_data(file_path, timestamp_header):
     """
@@ -29,7 +30,7 @@ def load_data(file_path, timestamp_header):
     data_values = data.drop(columns=[timestamp_header])
     return timestamps, data_values
 
-def extract_data(file_path, timestamp_header, column_name, data_column=None):
+def extract_data(file_path, timestamp_header, column_name, timeWindow = [0, 50000], data_column=None):
     """
     Extract and organize data from a single file.
 
@@ -37,6 +38,7 @@ def extract_data(file_path, timestamp_header, column_name, data_column=None):
     - file_path: Path to the data file.
     - timestamp_header: The column header for timestamps.
     - column_name: The column header for the data.
+    - timeWindow: A list with the beginning and ending relative time stamp to examine, ex: [0, 50000]
     - data_column: Pandas Series of data associated with the specified column (default: None).
 
     Returns:
@@ -57,18 +59,21 @@ def extract_data(file_path, timestamp_header, column_name, data_column=None):
 
     # Create time segment
     timestamps_rel -= timestamps_rel[0]
+    timeMask = np.where((timestamps_rel >= timeWindow[0]) & (timestamps_rel < timeWindow[1]))
 
-    data_array = np.array([(file_path, timestamps_rel, column_data, localTimes)],
+    data_array = np.array([(file_path, timestamps_rel[timeMask], column_data[timeMask], localTimes[timeMask])],
                           dtype=object)
     return data_array
 
-def detectTaps(sourceOneList, sourceTwoList, timeWindow = [0, 50000], height = 0.25):
+def detectTaps(sourceOneList, sourceTwoList, timeWindowOne = [0, 50000], timeWindowTwo = [0, 50000], heightOne = 0.25, heightTwo = 0.25):
     """
     Finds the taps for two data sources in n dimensions
 
     Parameters:
     - sourceOneList: A list of tuples for each dimension of data in the form of [(filepath, timeStampColName, dataColName),(filepath, timeStampColName, dataColName),...]
     - souceTwoList: A list of tuples for each dimension of data in the form of [(filepath, timeStampColName, dataColName),(filepath, timeStampColName, dataColName),...]
+    - timeWindow: A list of two integers indicating the window of time that should be examined
+    - height: The height that should be considered for tap detection
     
     Notes:
     - There should be one tuple per dimension of data
@@ -77,7 +82,7 @@ def detectTaps(sourceOneList, sourceTwoList, timeWindow = [0, 50000], height = 0
         - i.e. sourceA_AX has the same number of timestamps as sourceB_AY
 
     Returns:
-    - ? - TBD 
+    - None 
     """
 
     # ensure correct types
@@ -89,24 +94,18 @@ def detectTaps(sourceOneList, sourceTwoList, timeWindow = [0, 50000], height = 0
         return
     
     print("=" * 15, " Beginning Tap Detection ", "=" * 15)
-    print("Time Window: ", timeWindow)
-    print("Height: ", height)
+    print("Time Window One: ", timeWindowOne)
+    print("Height One: ", heightOne)
+    print("Time Window Two: ", timeWindowTwo)
+    print("Height Two: ", heightTwo)
     
     # create single magnitude vector for each file
-    sourceOneVec, sourceOneRelTimes, sourceOneLocalTimes = createMagnitudeVectorWithRelTime(sourceOneList)
-    sourceTwoVec, sourceTwoRelTimes, sourceTwoLocalTimes = createMagnitudeVectorWithRelTime(sourceTwoList)
+    sourceOneVec, sourceOneRelTimes, sourceOneLocalTimes, allDimensionsOne = loadDataAndCreateMagVector(sourceOneList, timeWindowOne)
+    sourceTwoVec, sourceTwoRelTimes, sourceTwoLocalTimes, allDimensionsTwo = loadDataAndCreateMagVector(sourceTwoList, timeWindowTwo)
 
     # find the peaks
-    sourceOneTapInd, sourceOneTapVal = find_peaks(sourceOneVec[0 : sum(sourceOneRelTimes < timeWindow[1])], height)
-    sourceTwoTapInd, sourceTwoTapVal = find_peaks(sourceTwoVec[0 : sum(sourceTwoRelTimes < timeWindow[1])], height)
-
-    # create a mask for the relative times that fits the provided time window (default: [0, 50000])
-    time_mask_one = np.where((sourceOneRelTimes > timeWindow[0]) & (sourceOneRelTimes < timeWindow[1]))
-    time_mask_two = np.where((sourceTwoRelTimes > timeWindow[0]) & (sourceTwoRelTimes < timeWindow[1]))
-
-    # remove any taps that come before the time window (the after ones are already accounted for when peaks are found)
-    sourceOneTapInd = sourceOneTapInd[sourceOneTapInd > time_mask_one[0][0]]
-    sourceTwoTapInd = sourceTwoTapInd[sourceTwoTapInd > time_mask_two[0][0]]
+    sourceOneTapInd, sourceOneTapVal = find_peaks(sourceOneVec, heightOne)
+    sourceTwoTapInd, sourceTwoTapVal = find_peaks(sourceTwoVec, heightTwo)
 
     print("***\nTap Indexes for Source One: ", sourceOneTapInd)
     print("***\nRelative Timestamps of Taps for Source One: ", sourceOneRelTimes[sourceOneTapInd])
@@ -114,7 +113,7 @@ def detectTaps(sourceOneList, sourceTwoList, timeWindow = [0, 50000], height = 0
     print("***\nTap Indexes for Source Two: ", sourceTwoTapInd)
     print("***\nRelative Timestamps of Taps for Source Two: ", sourceTwoRelTimes[sourceTwoTapInd])
 
-    # TODO write taps to file
+    # write taps to file
     print("=" * 15, " Saving Taps to File ", "=" * 15)
     tap_data_one = {'Indexes' : sourceOneTapInd,
                     'RelativeTimeStamp' : sourceOneRelTimes[sourceOneTapInd],
@@ -132,13 +131,117 @@ def detectTaps(sourceOneList, sourceTwoList, timeWindow = [0, 50000], height = 0
 
     print("=" * 15, " Finished! ", "=" * 15)
 
+    print("=" * 15, " Creating Plots for Validation ", "=" * 15)
+    plotTaps([(sourceOneVec, tap_data_one, allDimensionsOne, sourceOneRelTimes), (sourceTwoVec, tap_data_two, allDimensionsTwo, sourceTwoRelTimes)], ["Emotibit", "Cyton"])
+    print("=" * 15, " Finished! ", "=" * 15)
+    return
 
-def createMagnitudeVectorWithRelTime(listOfDimensionTuples):
+def plotTaps(tupleList, labelList = None):
+    """
+    Plots the vectors and the detected taps to allow for validation of the tap detector results
+
+    Parameters:
+    - List of tuples for each data source, example:
+            [(vector1, tapDict1, allDimensions1, sourceOneRelTimes), (vector1, tapDict2, allDimensions2, sourceTwoRelTimes)]
+            where:
+            - vector1 is the vector of the combined magintudes of all of the vectors in allDimensions1
+            - tapDict1 is a dictionary that is defined as follows:
+                - {'Indexes': indexes of the time stamps, 'RelativeTimeStamp': the relative time stamps of the taps, 'LocalTimeStamp': the local time stamps of the taps}
+            - allDimensions1 is an array with all of the dimensions of data for that source
+                - typically, this means that allDimensions 1 has 3 columns, one for x, y, and z
+            - relTimes1 is a single-dimensional array of all of the relative timestamps for that source of data
+    - list of labels for each of the provided data sources (optional)               
+    Notes:
+    - ...
+
+    Returns:
+    - ...
+    """
+    fig = plt.figure(1, figsize=(8.5, 11))
+    
+    # loop over all of the provided data sources
+    index = 1
+    for tuple in tupleList:
+        # the tuple should be (magnitudeVector, tapDictionary, allDimensionsArray)
+        if(len(tuple[0]) != len(tuple[2][0]) - 1):
+            print("Stopping - Error - Length of magnitude vector provided does not match length of corresponding raw dimension data provided: ", len(tuple[0]), len(tuple[2][0]) - 1)            
+            return
+        
+        # create a new subplot and fill with data for the combined magnitude vector
+        ax = fig.add_subplot(len(tupleList) * 2, 1, index)
+        if(labelList is not None):
+            label = labelList[int((index - 1) / 2)]
+        else:
+            label = "Source " + str(int((index) / 2) + 1)
+
+        createMagnitudeVectorSubPlot(ax, tuple[0], tuple[1], tuple[3], label)
+        index += 1
+
+        # create another subplot to fill with all of the raw dimensional data
+        ax = fig.add_subplot(len(tupleList) * 2, 1, index)
+        createAllDimensionSubPlot(ax, tuple[0], tuple[1], tuple[2], tuple[3], label)
+        index += 1
+
+    fig.tight_layout()
+    fig.savefig('taps.png')
+
+def createMagnitudeVectorSubPlot(subplot, vector, taps, relTimes, label):
+    """
+    Plots the magnitude vector and the detected taps to allow for validation of the tap detector results
+
+    Parameters:
+    - a subplot to plot on
+    - a magnitude vector
+    - a dictionary of all of the tap information
+        Example: {'Indexes': indexes of the time stamps, 'RelativeTimeStamp': the relative time stamps of the taps, 'LocalTimeStamp': the local time stamps of the taps}
+    - a label for the data source
+    
+    Notes:
+    - ...
+
+    Returns:
+    - none
+    """
+    subplot.plot(relTimes[:-1], vector)
+    subplot.plot(relTimes[taps['Indexes']], vector[taps['Indexes']], 'o')
+    subplot.title.set_text("Combined Magnitude Vector - " + label)
+    subplot.set_xlabel("Relative Timestamp")
+    subplot.set_ylabel("Acceleration")
+    
+def createAllDimensionSubPlot(subplot, vector, taps, allDims, relTimes, label):
+    """
+    Plots the magnitude vector and the detected taps and all the raw dimension data to allow for validation of the tap detector results
+    Raw dimensions data will be converted to the differences between each timestamp to match the magnitude vector
+
+    Parameters:
+    - a subplot to plot on
+    - a magnitude vector
+    - a dictionary of all of the tap information
+        Example: {'Indexes': indexes of the time stamps, 'RelativeTimeStamp': the relative time stamps of the taps, 'LocalTimeStamp': the local time stamps of the taps}
+    - multidimensional array of all of the raw data
+    - a label for the data source
+    
+    Notes:
+    - ...
+
+    Returns:
+    - none
+    """
+    subplot.plot(relTimes[:-1], vector)
+    subplot.plot(relTimes[taps['Indexes']], vector[taps['Indexes']], 'o')
+    for dimIndex in range(0, len(allDims)):
+        subplot.plot(relTimes[:-1], np.diff(allDims[dimIndex]))
+    subplot.title.set_text("All Vectors - " + label)
+    subplot.set_xlabel("Relative Timestamp")
+    subplot.set_ylabel("Acceleration")
+
+def loadDataAndCreateMagVector(listOfDimensionTuples, timeWindow = [0, 50000]):
     """
     Creates a single vector of the combined magnitudes of n vectors
 
     Parameters:
     - listOfDimensionTuples: A list of tuples that give the information of the location of the vectors to be combined
+        The format of the list of tuples should be as such: [(filepath, timeStampColName, dataColName),(filepath, timeStampColName, dataColName),...]
     
     Notes:
     - There should be one tuple per dimension of data
@@ -146,19 +249,24 @@ def createMagnitudeVectorWithRelTime(listOfDimensionTuples):
 
     Returns:
     - numpy.ndarray: of the combinted magnitude at each timestamp
-    - numpy.ndarray: the corresponding time stamps for each magnitude
+    - numpy.ndarray: the corresponding relative time stamps for each magnitude (relative to beginning of file)
+    - numpy.ndarray: the corresponding local time stamp for each magnitude
+    - numpy.ndarray: an array containing the raw data for all the provided dimensions (ncol = number of tuples in the list)
     """
     tempVec = []
     relTimes = []
     localTimes = []
+    allDims = []
     for dimensionTuple, i in zip(listOfDimensionTuples, range(0, len(listOfDimensionTuples))):
         if(len(dimensionTuple) != 3):
             print("Stopping - Error: Tuple is not of length 3\nTuple: ", dimensionTuple)
             return
         
         # merge all dimensions into a single vector
-        data = extract_data(dimensionTuple[0], dimensionTuple[1], dimensionTuple[2])
-
+        data = extract_data(dimensionTuple[0], dimensionTuple[1], dimensionTuple[2], timeWindow)
+        # data[0] = filename, data[1] = relative time stamps, data[2] = data column, data[3] = local timestamps
+        #print("Data: \n", data)
+        allDims.append(data[0][2])
         # only add rel times the first time through
         if (i == 0): 
             tempVec = np.power(np.diff(data[0][2]), 2)
@@ -166,152 +274,105 @@ def createMagnitudeVectorWithRelTime(listOfDimensionTuples):
             localTimes = data[0][3]
         else:
             tempVec = np.add(tempVec, np.power(np.diff(data[0][2]), 2))
+        
 
     # find the taps
-    print(localTimes)
     tempVec = np.sqrt(tempVec)
-    return tempVec, relTimes, localTimes
-   
-def detect(file_dir = "", file_base_names = "", timestamp_id = "LocalTimestamp", 
-           time_window = [0, 50000], height = 0.25):
-    """
-    @fn     detect()
-    @brief  Detects tap times and saves the results in a file named *_taps.csv
-    @param  file_dir Base directory of the parsed data files
-    @param  file_base_names array of file bases of the data files. Expected 
-            organization is file_dir/file_base_names[i]/file_base_names[i]_XX.csv
-    @param  timestamp_id timestamp identifier to use for timestamps of taps
-    @param  time_window Window (in secs) from the beginning of the file to look for taps
-    @param  height Height of the threshold for detecting peaks
-    @ToDo   Add multiple time_windows as input
-    """
-    print('***\ntapdetector.detect()')
-
-    type_tags = ['AX', 'AY', 'AZ']
-    time_mask = []
-    
-    
-    fig_name = "taps"
-    fig = plt.figure(fig_name)
-    fig.clf()
-    fig, axs = plt.subplots(nrows=len(type_tags) + 1, ncols=1, num=fig_name)
-    
-    print("type_tags: ", type_tags)
-    print("time_window: ", time_window)
-    print("height: ", height)
-    print("timestamp_id: ", timestamp_id)
-    print("Directory: ", file_dir)
-    print("file_base_names: ", file_base_names)
-    
-    
-    # ToDo Add multiple time_windows
-    # ToDo Add multiple timestamp_ids
-    for f in range(len(file_base_names)):
-        file_base = file_base_names[f]
-        print("File: ", file_base)
-        
-        data = []
-        data_vec = []
-        for t in range(len(type_tags)):
-            type_tag = type_tags[t]
-                    
-            file_path = file_dir + '\\' + file_base + '\\' + file_base + '_' + type_tag + '.csv'
-            print(file_path)
-            data.append(pd.read_csv(file_path))
-            
-            # Create time segment
-            # NOTE: this only works for signals with the same sampling rate
-            timestamps = data[t][timestamp_id].to_numpy()
-            timestamps_rel = timestamps - timestamps[0]
-            time_mask = np.where((timestamps_rel > time_window[0]) & (timestamps_rel < time_window[1]))
-            
-            # Plot data
-            plt.sca(plt.subplot(len(type_tags) + 1, 1, t + 1))
-            plt.plot(data[t][type_tag].to_numpy()[time_mask])
-            plt.gca().set_ylabel(type_tag)
-            plt.gca().axes.xaxis.set_visible(False)
-            
-            
-            # Create vector data
-            # NOTE: this only works for signals with the same sampling rate
-            if (t == 0): 
-                # first data type
-                data_vec = np.power(np.diff(data[t][type_tag].to_numpy()), 2)
-            else:
-                data_vec = np.add(data_vec, np.power(np.diff(data[t][type_tag].to_numpy()), 2))
-    
-            
-        data_vec = np.sqrt(data_vec)
-        p_ind, p_val = find_peaks(data_vec[0 : sum(timestamps_rel < time_window[1])], height=height)
-        p_ind = p_ind[p_ind > time_mask[0][0]] # Remove indexes less than time_window[0]
-        
-        
-        plt.sca(plt.subplot(len(type_tags) + 1, 1, len(type_tags) + 1))
-        
-        time_mask = time_mask[0][0 : min(len(time_mask[0]) - 1, len(timestamps_rel) - 1)]
-        masked_timestamps = timestamps_rel[time_mask]
-        
-        plt.plot(masked_timestamps, data_vec[time_mask])
-        plt.plot([masked_timestamps[1], masked_timestamps[len(masked_timestamps) - 1]], [height, height])
-        plt.plot(timestamps_rel[p_ind], data_vec[p_ind], 'r*')
-        plt.gca().set_ylabel("vec(diff())")
-        plt.gca().set_xlabel("Time since file begin (sec)")
-        
-        #np.set_printoptions(precision=16)
-        np.set_printoptions(formatter={'float': '{: 10.6f}'.format})
-        
-        print("***\nTap indexes: ", p_ind)
-        print("Tap RelativeTimestamp: ", timestamps_rel[p_ind])
-        print("Tap " + timestamp_id + ": ", timestamps[p_ind])
-        
-        file_path = file_dir + '\\' + file_base + '\\' + file_base + '_' + 'taps' + '.csv'
-        print('Saving: ' + file_path)
-        
-        tap_data= {'Indexes': p_ind,
-            'RelativeTimestamp': timestamps_rel[p_ind],
-            timestamp_id: timestamps[p_ind]}
-        df = pd.DataFrame(tap_data)
-        df.to_csv(file_path, float_format='%10.6f', index=False)
-
-            
+    return tempVec, relTimes, localTimes, allDims         
             
 def main():
-    # TODO create CLI functionality
-    # TODO scrape off the comments on top of the cyton file automatically
-    arguments = sys.argv
-    num_arguments = len(arguments)
-    # arguments - 1 for program name - 1 for start of window - 1 for end of window - 1 for height should be divisble by 3
-    #if((len(num_arguments) - 4) % 3 != 0):
-    #    print("Stopping - Error - Incorrect number of arguments specified")
-    #    return
-    
-    
+    """
+    Runs the tap detector
+    CLI Usage is found by running this file with the -h command
 
+    """
 
-    detectTaps([("C:/Users/Kurtis/EmotiBit_Biometric_Lib/py/emotibit/emotibit_AX.csv","LocalTimestamp","AX"),
-            ("C:/Users/Kurtis/EmotiBit_Biometric_Lib/py/emotibit/emotibit_AX.csv","LocalTimestamp","AX")],
-            [("C:/Users/Kurtis/EmotiBit_Biometric_Lib/py/emotibit/cyton.csv"," Timestamp"," Accel Channel 0"),
-             ("C:/Users/Kurtis/EmotiBit_Biometric_Lib/py/emotibit/cyton.csv"," Timestamp"," Accel Channel 1"),
-             ("C:/Users/Kurtis/EmotiBit_Biometric_Lib/py/emotibit/cyton.csv"," Timestamp"," Accel Channel 2")])
+    sourceOneTupleList = []
+    sourceTwoTupleList = []
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-sof", "--sourceOneFiles", action="store", type = str, nargs = "+", help="Path(s) to one or more files for the input data from source one. If more than one file is given, the given files will be pairwise matched with the data columns provided, which could require passing the same filename more than once so that all data columns can be matched.")
+    parser.add_argument("-sod", "--sourceOneDimensions", action="store", type = int, nargs=1, help="Integer number of dimensions of data from source one.")
+    parser.add_argument("-sot", "--sourceOneTimestamps", action="store", type = str, nargs=1, help="String of the column name for which timestamps can be found for source one.")
+    parser.add_argument("-soa", "--sourceOneData", action="store", type = str, nargs="+", help="String(s) of the column(s) where the data for source one can be found. Number of strings given should match the number of dimensions given")
+    parser.add_argument("-stf", "--sourceTwoFiles", action="store", type = str, nargs = "+", help="Path(s) to one or more files for the input data from source two. If more than one file is given, the given files will be pairwise matched with the data columns provided, which could require passing the same filename more than once so that all data columns can be matched")
+    parser.add_argument("-std", "--sourceTwoDimensions", action="store", type = int, nargs=1, help="Integer number of dimensions of data from source two.")
+    parser.add_argument("-stt", "--sourceTwoTimestamps", action="store", type = str, nargs="+", help="String of the column name for which timestamps can be found for source two.")
+    parser.add_argument("-sta", "--sourceTwoData", action="store", type = str, nargs="+", help="String(s) of the column(s) where the data for source one can be found. Number of strings given should match the number of dimensions given")
+    parser.add_argument("-tw1", "--timeWindowOne", action = "store", type = float, nargs="*", help="Two floats indicating the starting and ending relative timestamps for source one. (Optional: Default is 0.0 50000.0)")
+    parser.add_argument("-tw2", "--timeWindowTwo", action = "store", type = float, nargs="*", help="Two floats indicating the starting and ending relative timestamps for source two. (Optional: Default is 0.0 50000.0)")
+    parser.add_argument("-h1", "--heightOne", action= "store", type = float, nargs = "?", help="Single float value passed to the peak finding function for source one. (Optional: Default is 0.25)")
+    parser.add_argument("-h2", "--heightTwo", action = "store", type = float, nargs="?",  help="Single float value passed to the peak finding function for source two. (Optional: Default is 0.25)")
+    args = parser.parse_args()
+    print(args.sourceOneFiles)
+    print(args.sourceTwoData)
+    print(args.heightTwo)
+
+    # get the source one files into the tuple list
+    if(len(args.sourceOneFiles) == 1):
+        if(len(args.sourceOneData) != args.sourceOneDimensions):
+            print("Error - Number of data columns specified for source one does not match specified number of dimensions")
+            return
+        for dataCol in args.sourceOneData:
+            sourceOneTupleList.append((args.sourceOneFiles[0], args.sourceOneTimestamps[0], dataCol))
+    else:
+        # pairwise match
+        if(len(args.sourceOneFiles) != args.sourceOneDimensions[0]):
+            print("Error - Number of files specified for source one is not one and does not match number of dimensions specified")
+            return
+        if(len(args.sourceOneFiles) != len(args.sourceOneData)):
+            print("Error - NUmber of files specified for source one is not one and doese not mach number of data columns specified")
+            return
+        for fileName, dataCol in zip(args.sourceOneFiles, args.sourceOneData):
+            sourceOneTupleList.append((fileName, args.sourceOneTimestamps[0], dataCol))
+
+    # get the source two files into the tuple list
+    if(len(args.sourceTwoFiles) == 1):
+        if(len(args.sourceTwoData) != args.sourceTwoDimensions[0]):
+            print("Error - Number of data columns specified for source two does not match specified number of dimensions")
+            return
+        for dataCol in args.sourceTwoData:
+            sourceTwoTupleList.append((args.sourceTwoFiles[0], args.sourceTwoTimestamps[0], dataCol))
+    else:
+        # pairwise match
+        if(len(args.sourceTwoFiles) != args.sourceTwoDimensions):
+            print("Error - Number of files specified for source two is not one and does not match number of dimensions specified")
+            return
+        if(len(args.sourceTwoFiles) != len(args.sourceTwoData)):
+            print("Error - NUmber of files specified for source two is not one and doese not mach number of data columns specified")
+            return
+        for fileName, dataCol in zip(args.sourceTwoFiles, args.sourceTwoData):
+            sourceTwoTupleList.append((fileName, args.sourceTwoTimestamps[0], dataCol))
+        
+    # collect the other arguments
+    timeWindowOne = [0, 50000]
+    timeWindowTwo = [0, 50000]
+    if(args.timeWindowOne is not None):
+        if(len(args.timeWindowOne) != 2):
+            print("Error - Exactly 2 float arguments must be given for time window one. (-tw1 --timeWindowOne)")
+            return
+        timeWindowOne = [args.timeWindowOne[0], args.timeWindowOne[1]]
+    if(args.timeWindowTwo is not None):
+        if(len(args.timeWindowTwo) != 2):
+            print("Error - Exactly 2 float arguments must be given for time window two. (-tw2 --timeWindowTwo)")
+            return  
+        timeWindowTwo = [args.timeWindowTwo[0], args.timeWindowTwo[1]]
+
+    heightOne = 0.25
+    heightTwo = 0.25
+    if(args.heightOne is not None):
+        heightOne = args.heightOne
+    if(args.heightTwo is not None):
+        heightTwo = args.heightTwo
+
+    # call the tap detector
+    detectTaps(sourceOneList=sourceOneTupleList, 
+               sourceTwoList=sourceTwoTupleList, 
+               timeWindowOne=timeWindowOne, 
+               timeWindowTwo=timeWindowTwo,
+               heightOne=heightOne,
+               heightTwo=heightTwo)
+    return
 
 if __name__=="__main__":
     main()
-
-
-"""
-def plot_taps(data_array, height):
-    #
-    Plot taps for a specific type of file.
-    Parameters:
-    - data_array: Structured array containing organized data for a specific type of file.
-    - height: Height of the threshold for detecting peaks.
-
-    #
-        # Example: Plot data for each file
-        plt.figure(file_base)
-        plt.plot(timestamps_rel, data_window, label=f"{file_base}")
-        plt.legend()
-        plt.title(f"Taps for {file_base}")
-        plt.xlabel("Time since file begin (sec)")
-        plt.ylabel("Data")
-"""
