@@ -1,5 +1,5 @@
 # LSL Stream Viewer Installation Instructions
-These instructions are for installing and using the [LSL Stream Viewer](https://github.com/intheon/stream_viewer)
+These instructions are for installing and using the [LSL Stream Viewer](https://github.com/intheon/stream_viewer).
 Getting the install dependencies right was a bit tricky, so the exact steps used are included here:
 - Install `Anaconda`
 - Open `Anaconda Prompt` as admin
