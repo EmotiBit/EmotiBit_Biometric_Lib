@@ -25,3 +25,4 @@ pip install pandas==1.5.3
 ```
 python -m stream_viewer.applications.main -s "[PATH_TO_INI_FILE]lsl_viewer_PPG.ini"
 ```
+- You can specify different .ini files to view different data streams. NOTE: viewing more than 6 or so streams at once in Stream Viewer tends to run VERY slow, which is why there are several .ini files for viewing all of the streams output by EmotiBit.
