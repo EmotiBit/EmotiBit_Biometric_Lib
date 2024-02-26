@@ -2,6 +2,9 @@
 ### About
 The tap detector is designed to take input from two differnt sources of data and to "match" them together by detecting taps between the two devices. For example, two devices recording at the same time can be tapped against each other. Then, the resulting data files from both devices can be used with the tap detector to find the corresponding taps in either file so that their timestamps can be aligned. Data smoothing is done using a hann filter, whose window is specified by the user for each source of data.
 
+Sample data is included in a .zip file to use. The following command/parameters works well for the sample data provided. Note that the sample data includes noise at the end.
+```py .\py\emotibit\device_tapdetector.py -sof .\emotibit5_AX.csv .\emotibit5_AY.csv .\emotibit5_AZ.csv -sod 3 -sot LocalTimestamp -soa AX AY AZ -stf .\cyton5.txt -std 3 -stt " Timestamp" -sta " Accel Channel 0" " Accel Channel 1" " Accel Channel 2" -n1 EmotiBit -n2 Cyton -o taps5 -w2 13 -h2 0.08```
+
 ### Command Line Usage
 The tap detector is designed to be used with the command line. The tap detector is designed to work whether all dimensions of your data (e.g. X, Y, Z) are in one file or are in multiple files. The following example that is shown uses Emotibit files which store dimensions seperately and a cyton file where all dimensions are in one file:
 
