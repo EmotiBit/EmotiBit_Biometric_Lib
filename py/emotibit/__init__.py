@@ -11,4 +11,4 @@ Modified on Tue July 2 2019
 
 name = "emotibit"
 
-__all__ = ["datasyncer", "datarealigner", "device_tapdetector", "signal"]
+__all__ = ["datasyncer", "datarealigner", "device_tapdetector", "signal", "timestamp_converter"]
