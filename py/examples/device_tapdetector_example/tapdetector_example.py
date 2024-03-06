@@ -4,7 +4,7 @@ An example of how to use the tap detector functions in code.
 CLI usage is also supported and documentation can be found in README
 """
 
-from emotibit.device_tapdetector import detectTaps
+from tapdetector import detectTaps
 
 """
 In this example EmotiBit files are used and a Cyton file is used.
