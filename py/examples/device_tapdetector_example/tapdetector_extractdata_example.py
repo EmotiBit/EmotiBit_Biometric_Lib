@@ -4,7 +4,7 @@
 @author: pam
 
 This example demonstrates how the extract_data() function found in the tapdetector can be used.
-The function is used to extract and organize data from a single file, meaning that is both
+The function is used to extract and organize data from a single file, meaning that it both
 reads in the file, but also extracts the desired information from the file.
 
 The result of calling the extract_data() function is a structured array containing the requested data.

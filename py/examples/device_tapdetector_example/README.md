@@ -1,7 +1,7 @@
 # Tap Detector
 
 ## About
-The tap detector is designed to take input from two different sources of data and to "match" them together by detecting taps between the two devices. For example, two devices recording at the same time can be tapped against each other. Then, the resulting data files from both devices can be used with the tap detector to find the corresponding taps in either file so that their timestamps can be aligned. Data smoothing is done using a hann filter, whose window is specified by the user for each source of data.
+The tap detector is designed to take input from two different sources of data and to "align" them together by detecting taps between the two devices. For example, two devices recording at the same time can be tapped against each other. Then, the resulting data files from both devices can be used with the tap detector to find the corresponding taps in either file so that their timestamps can be aligned. Data smoothing is done using a hann filter, whose window is specified by the user for each source of data.
 
 Within this directory, there are three examples:
 
@@ -18,11 +18,13 @@ The tapdetector was written and tested using a specific anaconda environment, se
 ### Quick start example using sample data
 There is sample data to use with the tapDetector provided in ```ExampleDataForTapDetector.zip```. This section will show you how to use that data in the tapDetector.
 
-After extracting the data from the .zip file, ensure that all the sample data files are in the same working directory as the ```tapdetector.py``` file. Then, ensure that you have enabled the ```EmotiBit-pyenv-scipy``` anaconda environment. This environment can be found in the ```EmotiBit-pyenv.yml``` file found [in EmotiBit_Biometric_Lib/py/anaconda-environments/](https://github.com/EmotiBit/EmotiBit_Biometric_Lib/tree/master/py/anaconda-environments).
+After extracting the data from the .zip file, ensure that all the sample data files are your working directory. Then, ensure that you have enabled the ```EmotiBit-pyenv-scipy``` anaconda environment. This environment can be found in the ```EmotiBit-pyenv.yml``` file found [in EmotiBit_Biometric_Lib/py/anaconda-environments/](../../anaconda-environments).
 
-Once you have extracted the sample data and activated your anaconda environment, you can run the tapdetector with the sample data with the following command (ensure that your current working directory is the same as where ```tapdetector.py``` is located as well as all of the sample data files):
+Once you have extracted the sample data and activated your anaconda environment, you can run the tapdetector with the sample data with the following command (ensure that your current working directory is the same as where the sample data files are located, we recommend making this somewhere that is **not** within the EmotiBit repository to clutter/conflicting file names):
 
-```py tapdetector.py -sof .\emotibit5_AX.csv .\emotibit5_AY.csv .\emotibit5_AZ.csv -sod 3 -sot LocalTimestamp -soa AX AY AZ -stf .\cyton5.txt -std 3 -stt " Timestamp" -sta " Accel Channel 0" " Accel Channel 1" " Accel Channel 2" -n1 EmotiBit -n2 Cyton -o taps5 -w2 13 -h2 0.08```
+```python <path-to-tapdetector.py> -sof .\emotibit5_AX.csv .\emotibit5_AY.csv .\emotibit5_AZ.csv -sod 3 -sot LocalTimestamp -soa AX AY AZ -stf .\cyton5.txt -std 3 -stt " Timestamp" -sta " Accel Channel 0" " Accel Channel 1" " Accel Channel 2" -n1 EmotiBit -n2 Cyton -o taps5 -w2 13 -h2 0.08```
+
+Note: Not all python installations on all platforms use the ```python``` command, if using ```python``` does not work on your system, use ```py``` or whatever the appropriate command is for your system.
 
 An explanation of arguments in this example:
 - ```-sof .\emotibit5_AX.csv .\emotibit5_AY.csv .\emotibit5_AZ.csv``` is used to specify the names of the files where the data from source one can be found. 
@@ -40,7 +42,7 @@ An explanation of arguments in this example:
 - ```-h2 0.08``` is used to set the height threshold for tap detection for source two.
 
 
-The above command was tuned to work well with the files provided. After running the tapdetector, you will have 3 outputed files: a .png showing the tap detection, and two .csv files recording the tap information.
+The above command was tuned to work well with the files provided. After running the tapdetector, you will have 3 outputed files in your working directory: a .png showing the tap detection, and two .csv files recording the tap information.
 
 ### CLI Options
 
@@ -56,7 +58,7 @@ Additonally, ensure that you have already performed any processing necessary on 
 
 This section details how to handle different situations with the tapdetector:
 
-#### All my dimensions of data are in one file
+### All my dimensions of data are in one file
 - Provide **exactly** one filename
 - Provide **exactly** one timestamp column name
 - Provide the correct number of dimensions
@@ -85,7 +87,7 @@ Example: ```-sof .\emotibit_AX_AY.csv .\emotibit_AX_AY.csv .\emotibit_AZ.csv -so
 
 In this situation, the ```AX``` and ```AY``` columns are both held in the ```emotibit_AX_AY.csv``` file and the ```AZ``` column is held in the ```emotibit_AZ.csv``` file. 
 
-## Example Experiment with Tap Detector
+## Completing Your Own Experiment with the Tap Detector
 This section gives an overview of a full experiment using the tapdetector and properly collecting data.
 
 Data should be collected from two sources simultaneously. The following is a set of generic steps to take for data collection of any two devices to use in the tap detector, you may need to take additional steps depending on the devices you are using and the best practices for using those devices.
