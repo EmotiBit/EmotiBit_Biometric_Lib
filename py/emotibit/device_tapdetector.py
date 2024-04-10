@@ -5,6 +5,12 @@ from scipy import signal
 import matplotlib.pyplot as plt
 import argparse
 
+try:
+    import IPython
+    IPython.get_ipython().magic("matplotlib qt")
+except:
+    plt.ion()
+
 def load_data(file_path, timestamp_header):
     """
     Load data from a file.
@@ -120,14 +126,20 @@ def detectTaps(sourceOneList, sourceTwoList, timeWindowOne = [0, 50000], timeWin
                     'LocalTimeStamp' : sourceOneLocalTimes[sourceOneTapInd],
                     }
     df = pd.DataFrame(tap_data_one)
-    df.to_csv("./sourceOneTaps.csv", float_format='%10.6f', index = False)
+    filename = "./sourceOneTaps.csv"
+    if outputFile != "taps":
+        filename = "./" + outputFile + "_sourceOneTaps.csv"
+    df.to_csv(filename, float_format='%10.6f', index = False)
 
     tap_data_two = {'Indexes' : sourceTwoTapInd,
                     'RelativeTimeStamp' : sourceTwoRelTimes[sourceTwoTapInd],
                     'LocalTimeStamp' : sourceTwoLocalTimes[sourceTwoTapInd],
                     }
     df = pd.DataFrame(tap_data_two)
-    df.to_csv("./sourceTwoTaps.csv", float_format='%10.6f', index = False)
+    filename = "./sourceTwoTaps.csv"
+    if outputFile != "taps":
+        filename = "./" + outputFile + "_sourceTwoTaps.csv"
+    df.to_csv(filename, float_format='%10.6f', index = False)
 
     print("=" * 15, " Finished! ", "=" * 15)
 
@@ -353,10 +365,9 @@ def main():
     parser.add_argument("-tw2", "--timeWindowTwo", action = "store", type = float, nargs="*", help="Two floats indicating the starting and ending relative timestamps for source two. (Optional: Default is 0.0 50000.0)")
     parser.add_argument("-h1", "--heightOne", action= "store", type = float, nargs = "?", help="Single float value passed to the peak finding function for source one. (Optional: Default is 0.25)")
     parser.add_argument("-h2", "--heightTwo", action = "store", type = float, nargs="?",  help="Single float value passed to the peak finding function for source two. (Optional: Default is 0.25)")
-    parser.add_argument("-f", "--frequency", action = "store", type = float, nargs = "?", help="Single float value indicating the frequencies that the source files should be changed into for tap detection.")
     parser.add_argument("-w1", "--windowOne", action = "store", type = int, nargs = "?", help="Single integer specifying the window size for the convolve filter for data source one.")
     parser.add_argument("-w2", "--windowTwo", action = "store", type = int, nargs = "?", help="Single integer specifying the window size for the convolve filter for data source two.")
-    parser.add_argument("-o", "--outputFile", action = "store", type = str, nargs="?", help="Name of the output .png file for all of the plots. Defaults to \"taps.png\"")
+    parser.add_argument("-o", "--outputFile", action = "store", type = str, nargs="?", help="Name of the output .png file for all of the plots. Defaults to \"taps.png\" Also preprended to the tap.csv filenames if provided.")
     parser.add_argument("-n1", "--nameOne", action="store", type = str, nargs = "?", help="Name for the source one data source, defaults to \"Source One\"")
     parser.add_argument("-n2", "--nameTwo", action = "store", type = str, nargs="?", help="Name for the source two data source, defaults to \"Source Two\"")
     args = parser.parse_args()
