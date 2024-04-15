@@ -22,12 +22,13 @@ def calculateSlope(sourceOneFirstTaps, sourceOneSecondTaps, sourceTwoFirstTaps, 
     """
     # ensure matching length of taps
     if(len(sourceOneFirstTaps) != len(sourceTwoFirstTaps)):
-        print("Error - Length of first taps between source one and source two does not match: ", len(sourceOneFirstTaps, len(sourceTwoFirstTaps)))
+        print("Error - Length of first taps between source one and source two does not match: ", len(sourceOneFirstTaps), len(sourceTwoFirstTaps))
         return
     if(len(sourceOneSecondTaps) != len(sourceTwoSecondTaps)):
         print("Error - Length of second taps between source one and source two does not match: ", len(sourceOneSecondTaps), len(sourceTwoSecondTaps))
         return
 
+    # get values to put into a standard linear slope formula
     y1 = sum(sourceOneFirstTaps) / len(sourceOneFirstTaps)
     x1 = sum(sourceTwoFirstTaps) / len(sourceTwoFirstTaps)
     y2 = sum(sourceOneSecondTaps) / len(sourceOneSecondTaps)

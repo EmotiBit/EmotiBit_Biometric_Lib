@@ -31,11 +31,13 @@ def detectHR(ecgFile, ecgColumn, ecgTimestamp, hrFile, hrColumn, hrTimestamp, in
     """
 
     # to give better input parameters to the find_peaks() function
+        # providing a maximum allowed heart rate will allow the find_peaks function to discard any duplicate readings by enforcing a minimum space between beats
     maxHeartReatHertz = maxHeartReatBPM / 60 # divide by 60 seconds per minute
     minumiumSampleSeparation = inputFrequency / maxHeartReatHertz # gives the number of samples as a minimum between beats
 
     # read in file with ECG Data
     file = pd.read_csv(ecgFile)
+    # we filter the data so that we can more easily find the peaks (where the heart beats occured)
     filtered = ebsig.band_filter(file[ecgColumn], np.array([5, 49]), fs = inputFrequency)
     ind, _ = scisig.find_peaks(filtered, 
                                  height = height, 
@@ -133,7 +135,7 @@ def main():
     
     frequency = None
     maxHr = 180
-    height = 250
+    height = 250 # derived by examining the data, could possibly need to change this if using a different ECG measuring device or something else in a setup changes
     outputFile = "ecgHR.csv"
     plotFile = "detectedHR.png"
     if(args.frequency is not None):

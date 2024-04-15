@@ -37,3 +37,18 @@ In this final step, data is resampled to a consistent rate and then an analysis 
 The process for using the hr_scorer is shown [here](../hr_scorer_example/README.MD).
 
 At the end of this step you will have multiple metrics for comparing the similarity of the two HR files.
+
+## The Bigger Picture
+### What are we trying to do?
+
+We are trying to create a way that we can easily test the perfomance of different biometric algorithms. We want to have an environment where we can easily and quickly test the performance of alogrithms in a way that we can directly compare them to each other.
+
+### How are we trying to do it?
+
+We have created a pipeline that through realignment and resampling, allows us to compare two heart rate signals. Through analysis of the different metrics that we have tried and the data itself, we report multiple metrics that we believe help to explain the similarities between the two HR signals. 
+
+We have also created a framework to design tests to ensure that they are replicatable and versionable to ensure that the data we use can evolve along with the processes that we create.
+
+### How does what we are doing help us do what we are trying to do?
+
+This allows us to have a basic structure and start establishing the processes by which we will be able to continue to test algorithms. 

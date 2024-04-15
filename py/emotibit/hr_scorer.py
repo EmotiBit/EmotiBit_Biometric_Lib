@@ -31,10 +31,18 @@ def resample(fileOneName, fileOneTimestampColumn, fileTwoName, fileTwoTimestampC
     fileTwo = pd.read_csv(fileTwoName)
     
     # trim file two so that it matches the size of file one
+    # works on the assumption that file one is shorter, otherwise there will be unmatched data.
     fileTwoTrimmed = fileTwo.loc[(fileTwo[fileTwoTimestampColumn] >= fileOne[fileOneTimestampColumn][0]) & (fileTwo[fileTwoTimestampColumn] <= fileOne[fileOneTimestampColumn].iloc[-1])]
     fileTwoTrimmed = fileTwoTrimmed.reset_index(drop = True)
 
     # resample the data from both
+    # we are resampling the HR data to desired frequency, this has some implications:
+        # HR doesn't really have frequency in quite the same way as other measurements, since it is derivative
+        # This means that we are oversampling all of the data, and that also introduces some bias:
+            # For example, if the HR is slow, there are more timepoints sampled of that HR than if the HR is fast, since the resampled frequency is the same thorughout the data
+            # So, if the algorithm is really good when HR is fast and really bad when HR is slow, this method will make the performance look even worse than it really is
+        # So why keep the oversampling? It solves a different (bigger?) problem of being able to compare the HRs at each time point.
+        # If we have the same number of samples and they are perfectly lined up, then we are able to compare them and generate some metrics for how close they are.
     resampledOne = ebsig.periodize(fileOne, fileOneTimestampColumn, desiredFrequency, start_t = fileOne[fileOneTimestampColumn][0], end_t = fileOne[fileOneTimestampColumn].iloc[-1])
     resampledTwo = ebsig.periodize(fileTwoTrimmed, fileTwoTimestampColumn, desiredFrequency, start_t = fileOne[fileOneTimestampColumn][0], end_t = fileOne[fileOneTimestampColumn].iloc[-1])
     
@@ -61,15 +69,18 @@ def score(dataOne, dataOneColumn, dataTwo, dataTwoColumn, plotBaseName, nameOne 
     #dataTwo.to_csv("cytonRes.csv")  
     if plotBaseName is not None:
         plotBothHRs(dataOne[dataOneColumn], dataTwo[dataTwoColumn], plotBaseName, nameOne, nameTwo)
+    # we use this simple linear regression to get some stats, mainly interested in r, the correlation between the two
+    # note that because the relationship is not necessarily linear, r is not necessarily the best metric, but we still record it so we can understand how the value of r fits into the bigger picture
     slope, intercept, r, p, std_err = scistats.linregress(dataTwo[dataTwoColumn], dataOne[dataOneColumn])
+    # we choose to use spearman's rank correlation since it can help us to understand if they are well correlated, even if the distribution is non-parametric
     spearman_r = scistats.spearmanr(dataTwo[dataTwoColumn], dataOne[dataOneColumn])
     rho = spearman_r[0]
+    # we also decided to report the kendall rank correlation coefficient, another way of looking at how well the two signals are correlated 
     tau, p_val = scistats.kendalltau(dataTwo[dataTwoColumn], dataOne[dataOneColumn])
-    print("LEN: ", len(dataTwo[dataTwoColumn]))
+
     if plotBaseName is not None:
         scatterPlot(dataOne[dataOneColumn], dataTwo[dataTwoColumn], slope, intercept, r, rho, tau, plotBaseName, nameOne, nameTwo)
 
-    
     return slope, intercept, r, rho, tau, p, std_err
     
 def plotBothHRs(dataOneHR, dataTwoHR, plotBaseName, nameOne = "Source One", nameTwo = "Source Two"):
