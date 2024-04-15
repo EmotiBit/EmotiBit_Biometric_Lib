@@ -18,7 +18,7 @@ The tapdetector was written and tested using a specific anaconda environment, se
 ### Quick start example using sample data
 There is sample data to use with the tapDetector provided in ```ExampleDataForTapDetector.zip```. This section will show you how to use that data in the tapDetector.
 
-After extracting the data from the .zip file, ensure that all the sample data files are your working directory. Then, ensure that you have enabled the ```EmotiBit-pyenv-scipy``` anaconda environment. This environment can be found in the ```EmotiBit-pyenv.yml``` file found [in EmotiBit_Biometric_Lib/py/anaconda-environments/](../../anaconda-environments).
+After extracting the data from the .zip file, ensure that all the sample data files are your working directory. Then, ensure that you have enabled the ```EmotiBit-pyenv.yml``` anaconda environment. This environment can be found in the ```EmotiBit-pyenv.yml``` file found [in EmotiBit_Biometric_Lib/py/anaconda-environments/](../../anaconda-environments).
 
 Once you have extracted the sample data and activated your anaconda environment, you can run the tapdetector with the sample data with the following command (ensure that your current working directory is the same as where the sample data files are located, we recommend making this somewhere that is **not** within the EmotiBit repository to clutter/conflicting file names):
 
