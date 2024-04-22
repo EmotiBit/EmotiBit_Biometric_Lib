@@ -22,27 +22,18 @@ After extracting the data from the .zip file, ensure that all the sample data fi
 
 Once you have extracted the sample data and activated your anaconda environment, you can run the tapdetector with the sample data with the following command (ensure that your current working directory is the same as where the sample data files are located, we recommend making this somewhere that is **not** within the EmotiBit repository to clutter/conflicting file names):
 
-```python <path-to-tapdetector.py> -sof .\emotibit5_AX.csv .\emotibit5_AY.csv .\emotibit5_AZ.csv -sod 3 -sot LocalTimestamp -soa AX AY AZ -stf .\cyton5.txt -std 3 -stt " Timestamp" -sta " Accel Channel 0" " Accel Channel 1" " Accel Channel 2" -n1 EmotiBit -n2 Cyton -o taps5 -w2 13 -h2 0.08```
+```python <path-to-tapdetector.py> -sf .\emotibit5_AX.csv .\emotibit5_AY.csv .\emotibit5_AZ.csv -sd 3 -st LocalTimestamp -soa AX AY AZ -o taps5```
 
 Note: Not all python installations on all platforms use the ```python``` command, if using ```python``` does not work on your system, use ```py``` or whatever the appropriate command is for your system.
 
 An explanation of arguments in this example:
-- ```-sof .\emotibit5_AX.csv .\emotibit5_AY.csv .\emotibit5_AZ.csv``` is used to specify the names of the files where the data from source one can be found. 
-- ```-sod 3``` is used to specify that there are three dimensions of data in source one.
-- ```-sot LocalTimestamp``` is used to indicate the name of the timestamp column in the source one files.
-- ```-soa AX AY AZ``` is used to provide the names of the columns of the data in each of the files provided.
-- ```stf .\cyton5.txt``` is used to specify the filename where the source two data can be found.
-- ```-std 3``` is used to indicate that there are three dimensions of data in source two.
-- ```-stt " Timestamp"``` is used to indicate the name of the timestamp in the source two file.
-- ```-sta " Accel Channel 0" " Accel Channel 1" " Accel Channel 2"``` is used to provie the names of the columns of data in the file provided.
-- ```-n1 EmotiBit``` is used to give a name to source one, shown on the validation plot.
-- ```-n2 Cyton``` is used to give a name to source two, shown on the validation plot.
+- ```-sf .\emotibit5_AX.csv .\emotibit5_AY.csv .\emotibit5_AZ.csv``` is used to specify the names of the files where the data can be found. 
+- ```-sd 3``` is used to specify that there are three dimensions of data.
+- ```-st LocalTimestamp``` is used to indicate the name of the timestamp column.
+- ```-sa AX AY AZ``` is used to provide the names of the columns of the data in each of the files provided.
 - ```-o taps5``` is used to give a filename to the validation plot. An extension is not given as it is automatically appended.
-- ```-w2 13``` is used to set the size of the hann window for filtering in source two.
-- ```-h2 0.08``` is used to set the height threshold for tap detection for source two.
 
-
-The above command was tuned to work well with the files provided. After running the tapdetector, you will have 3 outputed files in your working directory: a .png showing the tap detection, and two .csv files recording the tap information.
+The above command was tuned to work well with the files provided. After running the tapdetector, you will have 3 outputed files in your working directory: a .png showing the tap detection, and a .csv file recording the tap information.
 
 ### CLI Options
 
@@ -64,7 +55,7 @@ This section details how to handle different situations with the tapdetector:
 - Provide the correct number of dimensions
 - Provide a matching number of data column names
 
-Example: ```-stf .\cyton.csv -std 3 -stt " Timestamp" -sta " Accel Channel 0" " Accel Channel 1" " Accel Channel 2"```
+Example: ```-sf .\cyton.csv -std 3 -st " Timestamp" -sa " Accel Channel 0" " Accel Channel 1" " Accel Channel 2"```
 
 In this situation, the ```cyton.csv``` file holds all of the columns of data, ``` Accel Channel 0```, ``` Accel Channel 1```, ``` Accel Channel 2``` and ``` Timestamp```.
 
@@ -76,14 +67,14 @@ In this situation, the ```cyton.csv``` file holds all of the columns of data, ``
 
 *This means that you need to explicitly say which filename is needed for each column, even if this means providing the same filename more than once.
 
-Example: ```-sof .\emotibit_AX.csv .\emotibit_AY.csv .\emotibit_AZ.csv -sod 3 -sot LocalTimestamp -soa AX AY AZ```
+Example: ```-sf .\emotibit_AX.csv .\emotibit_AY.csv .\emotibit_AZ.csv -sd 3 -sot LocalTimestamp -sa AX AY AZ```
 
 In this situation, the ```emotibit_AX.csv``` file holds the ```AX``` column, the ```emotibit_AY.csv``` file holds the ```AY``` column, and the ```emotibit_AZ.csv``` holds the ```AZ``` file. All files contain the ```LocalTimestamp``` column that has the timestamps of the data.
 
 ### I have two files, but 3 columns of data
 This is handled the same way as the above situation "All my dimensions of data are spread across multiple files". Here we will provide an explicit example of how a command would look like in this situation:
 
-Example: ```-sof .\emotibit_AX_AY.csv .\emotibit_AX_AY.csv .\emotibit_AZ.csv -sod 3 -sot LocalTimestamp -soa AX AY AZ```
+Example: ```-sf .\emotibit_AX_AY.csv .\emotibit_AX_AY.csv .\emotibit_AZ.csv -sd 3 -sot LocalTimestamp -sa AX AY AZ```
 
 In this situation, the ```AX``` and ```AY``` columns are both held in the ```emotibit_AX_AY.csv``` file and the ```AZ``` column is held in the ```emotibit_AZ.csv``` file. 
 
