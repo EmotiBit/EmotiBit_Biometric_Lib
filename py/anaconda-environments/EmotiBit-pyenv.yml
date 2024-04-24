@@ -1,4 +1,4 @@
-name: EmotiBit-pyenv-scipy
+name: EmotiBit-pyenv
 channels:
   - defaults
 dependencies:
