@@ -8,7 +8,7 @@ import argparse
 try:
     import IPython
     IPython.get_ipython.magic("matplotlib qt")
-except ImportError:
+except AttributeError:
     plt.ion()
 
 

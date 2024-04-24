@@ -9,7 +9,7 @@ class TestTimestampConverterMethods(unittest.TestCase):
         sourceOneSecondTaps = [50, 60, 70]
         sourceTwoSecondTaps = [50, 55, 60]
 
-        self.assertEqual(tsc.calculateSlope(sourceOneFirstTaps, sourceOneSecondTaps, sourceTwoFirstTaps, sourceTwoSecondTaps),
+        self.assertEqual(tsc.calculate_slope(sourceOneFirstTaps, sourceOneSecondTaps, sourceTwoFirstTaps, sourceTwoSecondTaps),
                          1,
                          "Slope was not calculated correctly")
         
@@ -19,7 +19,7 @@ class TestTimestampConverterMethods(unittest.TestCase):
         sos = [4, 6, 8]
         sts = [6, 8, 10]
 
-        self.assertIsNone(tsc.calculateSlope(sof, sos, stf, sts),
+        self.assertIsNone(tsc.calculate_slope(sof, sos, stf, sts),
                           "Did not detect that the length of first set of taps did not match")
         
     def test_calculateSlopeWithMismatchedSecondLengths(self):
@@ -28,14 +28,14 @@ class TestTimestampConverterMethods(unittest.TestCase):
         sos = [4, 8]
         sts = [6, 8, 10]
 
-        self.assertIsNone(tsc.calculateSlope(sof, sos, stf, sts),
+        self.assertIsNone(tsc.calculate_slope(sof, sos, stf, sts),
                           "Did not detect that the length of second set of taps did not match")
 
     def test_calculateBWithGoodValues(self):
         so = [1, 2, 3]
         st = [3, 4, 5]
 
-        self.assertEqual(tsc.calculateB(1, so, st),
+        self.assertEqual(tsc.calculate_b(1, so, st),
                          -2,
                          "Did not properly calculate y-intercept")
         
@@ -43,7 +43,7 @@ class TestTimestampConverterMethods(unittest.TestCase):
         so = [1, 2, 3]
         st = [2, 3]
 
-        self.assertIsNone(tsc.calculateB(1, so, st),
+        self.assertIsNone(tsc.calculate_b(1, so, st),
                           "Did not detect mismatched lengths")
 
 

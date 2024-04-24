@@ -190,7 +190,7 @@ def main():
     parser.add_argument("-o",
                         "--output",
                         action="store",
-                        typ=str,
+                        type=str,
                         nargs="?",
                         help="""Output file name. (Optional: If not provided,
                          df is returned and not written to a file).""")

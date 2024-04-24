@@ -1,7 +1,29 @@
-# Full Experiment Example
+# HR_Scorer_Full_Experiment_Example
 This repository contains several different scripts for working with biometric signals from EmotiBit (and other devices) to create derivative metrics and to compare signals to each other to see how similar they are.
 
 This README describes the full process of conducting an experiment between two devices all the way to scoring how similar the heart rate readings from the devices are to each other.
+
+## The Bigger Picture
+### What are we trying to do?
+
+We are trying to create a way that we can easily test the perfomance of different biometric algorithms. We want to have an environment where we can easily and quickly test the performance of alogrithms in a way that we can directly compare them to each other.
+
+### How are we trying to do it?
+
+We have created a pipeline that through realignment and resampling, allows us to compare two heart rate signals. Through analysis of the different metrics that we have tried and the data itself, we report multiple metrics that we believe help to explain the similarities between the two HR signals. 
+
+We have also created a framework to design tests to ensure that they are replicatable and versionable to ensure that the data we use can evolve along with the processes that we create.
+
+### Where do datasets/tests get stored?
+We have created different tests (ways of collecting data), the artifacts of these tests are datasets that were collected with those tests. The tests can be found in [this repository.](https://github.com/EmotiBit/Biometric_Validation_Methods) 
+
+These tests all carry a version number to make undestanding when changes happened and how they do or do not affect data easy to understand. The methodology for versioning can be found [here.](https://github.com/EmotiBit/Biometric_Validation_Methods)
+
+Test results are stored in a table that shows statistics for each algorithm on the test side by side, as part of a relase, an example can be seen [here.](https://github.com/EmotiBit/Biometric_Validation_Methods/releases/tag/sit-stand-sit_v0.0.0)
+
+### How does what we are doing help us do what we are trying to do?
+
+This allows us to have a basic structure and start establishing the processes by which we will be able to continue to test algorithms. 
 
 ## Data Collection
 The first step is data collection. Collection should be done on two devices at the same time, tapping the devices against each other at the beginning and the end of the session so that the data from the devices can be properly aligned.
@@ -37,18 +59,3 @@ In this final step, data is resampled to a consistent rate and then an analysis 
 The process for using the hr_scorer is shown [here](../hr_scorer_example/README.MD).
 
 At the end of this step you will have multiple metrics for comparing the similarity of the two HR files.
-
-## The Bigger Picture
-### What are we trying to do?
-
-We are trying to create a way that we can easily test the perfomance of different biometric algorithms. We want to have an environment where we can easily and quickly test the performance of alogrithms in a way that we can directly compare them to each other.
-
-### How are we trying to do it?
-
-We have created a pipeline that through realignment and resampling, allows us to compare two heart rate signals. Through analysis of the different metrics that we have tried and the data itself, we report multiple metrics that we believe help to explain the similarities between the two HR signals. 
-
-We have also created a framework to design tests to ensure that they are replicatable and versionable to ensure that the data we use can evolve along with the processes that we create.
-
-### How does what we are doing help us do what we are trying to do?
-
-This allows us to have a basic structure and start establishing the processes by which we will be able to continue to test algorithms. 
