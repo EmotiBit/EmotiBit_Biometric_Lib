@@ -449,7 +449,6 @@ def main():
     """
 
     source_tuple_list = []
-    source_two_tuple_list = []
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-sf",
