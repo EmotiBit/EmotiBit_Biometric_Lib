@@ -6,7 +6,10 @@
     * Briefly:
       * Install Anaconda - https://www.anaconda.com/download/
 * Download or clone EmotiBit_Biometric_Lib to your computer
-* Open Anaconda Navigator and launch Spyder
+* Open Anaconda Navigator
+* Import EmotiBit_Biometric_Lib/py/EmotiBit-pyenv.yml into Anaconda Navigator Environments
+  * <img src="https://github.com/EmotiBit/EmotiBit_Biometric_Lib/assets/537062/5ff71b46-17c7-4fd8-87eb-0e92b0cedd2f" width="300">
+* Launch Spyder
 * Open Tools>PYTHONPATH manager and Add path to the EmotiBit_Biometric_Lib/py folder
 * Optional: Set graphs to open in an interactive window
   * Open Tools>Preferences>IPython console>Graphics>Backend>Automatic
