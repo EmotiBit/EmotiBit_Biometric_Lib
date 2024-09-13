@@ -16,9 +16,9 @@ def main():
     # first, we need to resample the data, the function will read the files and do that for us
     ebResampled, cyResampled = resample("ebhr6_HR_trim.csv", "LocalTimestamp", "ecgHR6.csv", "Timestamp", 100)
     # then, score them
-    slope, intercept, r, p, err = score(ebResampled, "HR", cyResampled, "HR", None, "EmotiBit", "Cyton")
+    slope, intercept, r, rho, tau, p, std_err = score(ebResampled, "HR", cyResampled, "HR", None, "EmotiBit", "Cyton")
     # and print results
-    print("Slope: ", slope, "\nIntercept: ", intercept, "\nR: ", r, "\nP: ", p, "\nerr: ", err)
+    print("Slope: ", slope, "\nIntercept: ", intercept, "\nR: ", r, "\nP: ", p, "\nerr: ", std_err)
     
     
 if __name__ == "__main__":

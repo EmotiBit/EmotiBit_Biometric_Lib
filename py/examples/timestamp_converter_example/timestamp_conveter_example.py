@@ -4,7 +4,7 @@ An example of how to use the timestamp converter functions in code.
 CLI usage is also supported and documentation can be found by using -h
 """
 
-from emotibit.timestamp_converter import convertTimestamps
+from emotibit.timestamp_converter import convert_time_stamps
 import pandas as pd
 
 """
@@ -29,7 +29,7 @@ def main():
     halfOftapsTwo = int(len(tapsTwo) / 2)
 
     # convert the file
-    df = convertTimestamps(tapsOne[:halfOftapsOne], 
+    df = convert_time_stamps(tapsOne[:halfOftapsOne],
                            tapsOne[halfOftapsOne:], 
                            tapsTwo[:halfOftapsTwo], 
                            tapsTwo[halfOftapsTwo:], 
