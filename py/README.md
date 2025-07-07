@@ -9,7 +9,7 @@
 * Open Anaconda Navigator
 * Import EmotiBit_Biometric_Lib/py/EmotiBit-pyenv.yml into Anaconda Navigator Environments
   * <img src="https://github.com/EmotiBit/EmotiBit_Biometric_Lib/assets/537062/5ff71b46-17c7-4fd8-87eb-0e92b0cedd2f" width="300">
-* Use `conda develop py` while in EmotiBit_Biometric_Lib to add the py directory to path
+* Use `conda develop py` while in EmotiBit_Biometric_Lib directory to add the `py` directory to path
 
 ## Checkout the [examples](./examples) folder to start working with the recorded data.
 For example, to run `scorer_example.py`:
@@ -19,7 +19,7 @@ For example, to run `scorer_example.py`:
 4) `cd` to `examples/scorer_example`
 5) Unzip SampleDataForHRScorer.zip into the folder
 6) Run `python scorer_example.py`
-7) After the program has finished running, the terminal should show some statistics and there should be a new image in the directory with a plot of the two data files
+7) After the program has finished running, the terminal should show some statistics and there should be new plots in the directory.
 
 ## Python Data Viewer
 The Python Data viewer is an interactive tool designed to visualize the data stored on the SD-Card from the EmotiBit.
