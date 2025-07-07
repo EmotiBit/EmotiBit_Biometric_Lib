@@ -50,15 +50,21 @@ def resample(file_one_name,
     file_one = pd.read_csv(file_one_name)
     file_two = pd.read_csv(file_two_name)
 
-    # Trim file two so that it matches the size of file one.
-    # Works on the assumption that file one is shorter,
-    # otherwise there will be unmatched data.
+    # Find the overlapping time range between two files
+    start_time = max(file_one[file_one_timestamp_col].iloc[0], file_two[file_two_timestamp_col].iloc[0])
+    end_time = min(file_one[file_one_timestamp_col].iloc[-1], file_two[file_two_timestamp_col].iloc[-1])
+
+    # Trim file_one to the overlap
+    file_one_trimmed = file_one.loc[
+        (file_one[file_one_timestamp_col] >= start_time) &
+        (file_one[file_one_timestamp_col] <= end_time)
+    ].reset_index(drop=True)
+
+    # Trim file_two to the overlap
     file_two_trimmed = file_two.loc[
-        (file_two[file_two_timestamp_col]
-         >= file_one[file_one_timestamp_col][0])
-        & (file_two[file_two_timestamp_col]
-           <= file_one[file_one_timestamp_col].iloc[-1])]
-    file_two_trimmed = file_two_trimmed.reset_index(drop=True)
+        (file_two[file_two_timestamp_col] >= start_time) &
+        (file_two[file_two_timestamp_col] <= end_time)
+    ].reset_index(drop=True)
 
     # We are resampling the data to desired frequency,
     # this has some implications:
@@ -77,26 +83,19 @@ def resample(file_one_name,
     # If we have the same number of samples and they are perfectly lined up,
     # then we are able to compare them and generate
     # some metrics for how close they are.
-    resampled_one = ebsig.periodize(file_one,
+    resampled_one = ebsig.periodize(file_one_trimmed,
                                     file_one_timestamp_col,
                                     desired_frequency,
-                                    start_t=file_one[file_one_timestamp_col][0],
-                                    end_t=file_one[file_one_timestamp_col].iloc[-1])
+                                    start_t=start_time,
+                                    start_val=file_one_trimmed[file_one_data_col].iloc[0],
+                                    end_t=end_time)
     resampled_two = ebsig.periodize(file_two_trimmed,
                                     file_two_timestamp_col,
                                     desired_frequency,
-                                    start_t=file_one[file_one_timestamp_col][0],
-                                    end_t=file_one[file_one_timestamp_col].iloc[-1])
-
-    # It is possible that file two has been left with some NAs in the beginning
-    # this fixes those.
-    file_two_early_part = file_two[file_two[file_two_timestamp_col]
-                                   < file_one[file_one_timestamp_col][0]]
-    # Gets the last data point before the start of file one.
-    fill_in_val = file_two_early_part[file_two_data_col].iloc[-1]
-    # Fills in the missing values with that value.
-    resampled_two = resampled_two.fillna(fill_in_val)
-
+                                    start_t=start_time,
+                                    start_val=file_two_trimmed[file_two_data_col].iloc[0],
+                                    end_t=end_time)
+    
     return resampled_one, resampled_two
 
 
