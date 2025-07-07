@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal as scisig
-import emotibit.signal as ebsig
+import emotibit.emotibit_signal as ebsig
 
 try:
     import IPython

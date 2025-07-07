@@ -202,6 +202,10 @@ class DataViewer:
 
 		for j in range(2):  # columns of subplot
 			for i in range(9):  # rows in subplot
+				# if trying to plot more subplots than available data
+				if ((j*9 + i) >= len(self.my_syncer.time_series)):
+					break
+
 				line = self.axes[i, j].plot(self.my_syncer.time_series[j * 9 + i].timestamp,
 											self.my_syncer.time_series[j * 9 + i].data, linestyle='-', zorder=10,
 											alpha=0.9)
