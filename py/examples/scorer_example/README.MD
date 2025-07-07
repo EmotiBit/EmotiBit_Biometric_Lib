@@ -11,6 +11,8 @@ To do this, the script will resample both files at the given rate and then will 
 - P: The p-value associated with R.
 - err: The standard error value.
 
+`scorer.py` will also output three plots (raw resampled data, scatterplot w/ regression line, and mean-difference plot) to visually compare data.
+
 **Note:** `scorer.py` is capable of comparing any two different signals and providing statistics of how similar they are. This example simply chooses to compare HR signals, but the same process can be applied to any metric.
 
 ## Quickstart Usage
@@ -24,7 +26,7 @@ To do this, the script will resample both files at the given rate and then will 
 `scorer.py` can also be run from command line. The steps on how to do so using the HR data is below.
 1) Activate the EmotiBit-pyenv environment
 2) Unzip the SampleData.zip file into the `scorer_example` directory
-3) Run ```python ../../emotibit/scorer.py -f1 ebhr6_HR_trim.csv -t1 LocalTimestamp -d1 HR -f2 ecgHR6.csv -t2 Timestamp -d2 HR -f 100 -n1 EmotiBit -n2 Cyton```
+3) Run ```python ../../emotibit/scorer.py -f1 ebhr6_HR_trim.csv -t1 LocalTimestamp -d1 HR -f2 ecgHR6.csv -t2 Timestamp -d2 HR -f 100 -n1 EmotiBit -n2 Cyton -o cyton -l HR```
     - Update the path to `scorer.py` or either of the data files if needed
 
 #### Explanation of Arguments in Example:
@@ -37,6 +39,8 @@ To do this, the script will resample both files at the given rate and then will 
 - f: Provides the frequency to resample to (in hertz).
 - n1: Provides a name for the dependent variable.
 - n2: Provides a name for the independent variable.
+- o: Provides the plot base name that will be used when saving the images of the plots.
+- l: Label for the data being plotted.
 
 ### Format of Files
 The scorer requires that two files are provided. The files must conform to these requirements:
@@ -45,7 +49,7 @@ The scorer requires that two files are provided. The files must conform to these
 1. There is a corresponding column of timestamps (should be the same length as the data column)
 
 ### Output
-The values of the scoring are shown in the terminal and a plot is saved/opened for viewing to validate results. These results can then be put in a release in [Biometric_Validation_Methods](https://github.com/EmotiBit/Biometric_Validation_Methods) to provide performance metrics for a specific test, or they can also be used for any other purpose as well.
+The values of the scoring are shown in the terminal and a plot is saved/opened for viewing to validate results. These results can then be put in the README of an algorithm repository so that the algorithm's performance against a "gold standard" device can be evaluated.
 
 ### Notes on Scoring Methodology
 To score the files, they are first resampled to the specified rate. This rate should be the sampling rate of the slower device to avoid creating precision that does not truly exist.
