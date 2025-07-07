@@ -10,8 +10,8 @@ import sys
 import emotibit.dataviewer as dataviewer
 
 # specify the location of the folder which contains the parsed data
-file_dir = r"some directory" # e.g. C:\Users\dev\data  # Ex. C:\Users\dev\data
-# specify the base file name of teh parsed data
+file_dir = r"some directory" # e.g. C:\Users\dev\data
+# specify the base file name of the parsed data
 file_base = r"some file"  # e.g. 2019-12-10_11-55-54-038975
 
 # arguments for command line
