@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
-import emotibit.emotibit_signal as ebsig
+import py.emotibit.signal as ebsig
 import matplotlib.pyplot as plt
 import scipy.stats as scistats
 import statsmodels.api as sm
@@ -272,8 +272,8 @@ def mean_diff_plot(data_one,
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f1",
-                        "--file_one",
+    parser.add_argument("-p1",
+                        "--path_one",
                         action="store",
                         type=str,
                         nargs=1,
@@ -294,8 +294,8 @@ def main():
                         nargs=1,
                         help="""Name of the column in source
                           one that contains the HR data.""")
-    parser.add_argument("-f2",
-                        "--file_two",
+    parser.add_argument("-p2",
+                        "--path_two",
                         action="store",
                         type=str,
                         nargs=1,
@@ -355,11 +355,11 @@ def main():
   
     args = parser.parse_args()
 
-    file_one = args.file_one[0]
+    file_one = args.path_one[0]
     time_col_one = args.timestamp_one[0]
     data_col_one = args.data_one[0]
 
-    file_two = args.file_two[0]
+    file_two = args.path_two[0]
     time_col_two = args.timestamp_two[0]
     data_col_two = args.data_two[0]
 

@@ -1,4 +1,4 @@
-# HR_Scorer_Full_Experiment_Example
+# Scorer_Full_Experiment_Example
 This repository contains several different scripts for working with biometric signals from EmotiBit (and other devices) to create derivative metrics and to compare signals to each other to see how similar they are.
 
 This README describes the full process of conducting an experiment between two devices all the way to scoring how similar the heart rate readings from the devices are to each other.
@@ -53,9 +53,9 @@ If you have ECG data that needs to have HR detected from it, you can do so using
 
 At the end of this step, you should now have HR data with timestamps for any ECG data you had.
 
-## HR Scoring
-In this final step, data is resampled to a consistent rate and then an analysis between the two files is done. You will need two HR data files for this step.
+## Scoring
+In this final step, data is resampled to a consistent rate and then an analysis between the two files is done. You will need two data files for this step.
 
-The process for using the hr_scorer is shown [here](../hr_scorer_example/README.MD).
+The process for using the scorer is shown [here](../scorer_example/README.MD).
 
-At the end of this step you will have multiple metrics for comparing the similarity of the two HR files.
+At the end of this step you will have multiple metrics for comparing the similarity of the two data files.
