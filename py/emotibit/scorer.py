@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
-import py.emotibit.signal as ebsig
+import emotibit.signal as ebsig
 import matplotlib.pyplot as plt
 import scipy.stats as scistats
 import statsmodels.api as sm
