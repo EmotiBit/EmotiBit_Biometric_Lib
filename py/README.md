@@ -23,6 +23,5 @@ For example, to run `scorer_example.py`:
 
 ## Python Data Viewer
 The Python Data viewer is an interactive tool designed to visualize the data stored on the SD-Card from the EmotiBit.
-- Run the [`dataviewer_example.py`](./examples/dataviewer_example) example under the `py/Examples/dataviewer_example` folder the same as above.
-  - Make sure to update the `file_dir` and `file_base` variables to point to your data file.
+- Refer to `py/emotibit/examples/dataviewer_example/README.md` for detailed instructions on how to use Data Viewer
 

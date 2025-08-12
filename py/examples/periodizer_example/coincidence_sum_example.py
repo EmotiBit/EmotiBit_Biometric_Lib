@@ -6,7 +6,7 @@ aperiodic signals and write to file a metric quantifying the coincidence.
 @author: consu
 """
 
-import py.emotibit.signal as ebsig
+import emotibit.signal as ebsig
 import numpy as np
 import pandas as pd
 import scipy.signal as scisig

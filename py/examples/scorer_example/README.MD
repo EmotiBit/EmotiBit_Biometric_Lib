@@ -21,7 +21,7 @@ To do this, the script will resample both files at the given rate and then will 
     - Follow the instructions [here](https://github.com/EmotiBit/EmotiBit_Biometric_Lib/tree/master/py) to setup Anaconda if you have not done so already
 2) Unzip the .zip file in the `scorer_example` directory
 3) If not there already, move the `.csv` files from the `.zip` file into the `scorer_example` directory
-4) Run `python scorer.py` while in the `scorer_example` directory
+4) Run `python scorer_example.py` while in the `scorer_example` directory
 
 ### Using CLI
 `scorer.py` can also be run from command line. The steps on how to do so using the HR data is below.

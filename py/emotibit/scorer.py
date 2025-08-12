@@ -54,6 +54,9 @@ def resample(file_one_name,
     start_time = max(file_one[file_one_timestamp_col].iloc[0], file_two[file_two_timestamp_col].iloc[0])
     end_time = min(file_one[file_one_timestamp_col].iloc[-1], file_two[file_two_timestamp_col].iloc[-1])
 
+    if start_time >= end_time:
+      raise ValueError("No overlapping time range between the two files. Check timestamp columns and time units.")
+
     # Trim file_one to the overlap
     file_one_trimmed = file_one.loc[
         (file_one[file_one_timestamp_col] >= start_time) &
@@ -65,6 +68,9 @@ def resample(file_one_name,
         (file_two[file_two_timestamp_col] >= start_time) &
         (file_two[file_two_timestamp_col] <= end_time)
     ].reset_index(drop=True)
+
+    if file_one_trimmed.empty or file_two_trimmed.empty:
+      raise ValueError("After trimming to the overlapping time range, one or both dataframes are empty.")
 
     # We are resampling the data to desired frequency,
     # this has some implications:
@@ -99,23 +105,23 @@ def resample(file_one_name,
     return resampled_one, resampled_two
 
 
-def score(data_one,
-          data_one_column,
-          data_two,
-          data_two_column,
+def score(dependent_data,
+          dependent_data_column,
+          independent_data,
+          independent_data_column,
           plot_base_name,
-          name_one="Source One",
-          name_two="Source Two",
+          dependent_name="Dependent Source",
+          independent_name="Independent Source",
           data_label="Data"):
     """
-    @input data_one:
+    @input dependent_data:
         df of the first set of data (the data you are testing)
-    @input data_one_column:
+    @input dependent_data_column:
         string name of the column of interest in data_one
-    @input data_two:
+    @input independent_data:
         df of the second set of data
         (the data you are assuming to be the "truth"/independent variable)
-    @input dataTwoColmn:
+    @input independent_data_column:
         string name of the column of interset in data_two
 
     @info: df One and df Two should already be resampled so
@@ -125,12 +131,12 @@ def score(data_one,
     """
 
     # Plot two data sources along temporal axis
-    plot_both(data_one[data_one_column],
-                  data_two[data_two_column],
+    plot_both(dependent_data[dependent_data_column],
+                  independent_data[independent_data_column],
                   plot_base_name,
                   data_label,
-                  name_one,
-                  name_two)
+                  dependent_name,
+                  independent_name)
     # We use this simple linear regression to get some stats,
     # mainly interested in r, the correlation between the two
     # note that because the relationship is not necessarily linear,
@@ -140,22 +146,22 @@ def score(data_one,
      intercept,
      r,
      p,
-     std_err) = scistats.linregress(data_one[data_one_column],
-                                    data_two[data_two_column])
+     std_err) = scistats.linregress(independent_data[independent_data_column],
+                                    dependent_data[dependent_data_column])
     # We choose to use spearman's rank correlation since
     # it can help us to understand if they are well correlated,
     # even if the distribution is non-parametric.
-    spearman_r = scistats.spearmanr(data_one[data_one_column],
-                                    data_two[data_two_column])
+    spearman_r = scistats.spearmanr(dependent_data[dependent_data_column],
+                                    independent_data[independent_data_column])
     rho = spearman_r[0]
     # We also decided to report the kendall rank correlation coefficient.
     # Another way of looking at how well the two signals are correlated.
-    tau, _ = scistats.kendalltau(data_one[data_one_column],
-                                 data_two[data_two_column])
+    tau, _ = scistats.kendalltau(dependent_data[dependent_data_column],
+                                 independent_data[independent_data_column])
 
     # Scatter plot to show linear regression line
-    scatter_plot(data_one[data_one_column],
-                  data_two[data_two_column],
+    scatter_plot(dependent_data[dependent_data_column],
+                  independent_data[independent_data_column],
                   slope,
                   intercept,
                   r,
@@ -163,17 +169,17 @@ def score(data_one,
                   tau,
                   plot_base_name,
                   data_label,
-                  name_one,
-                  name_two)
+                  dependent_name,
+                  independent_name)
     
     # Bland-Altman mean difference plot to visualize the agreement between the two data sources
     mean_diff_plot(
-      data_one[data_one_column], 
-      data_two[data_two_column],
+      dependent_data[dependent_data_column], 
+      independent_data[independent_data_column],
       plot_base_name,
       data_label,
-      name_one,
-      name_two
+      dependent_name,
+      independent_name
     )
 
     return slope, intercept, r, rho, tau, p, std_err

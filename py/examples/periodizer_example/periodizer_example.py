@@ -6,7 +6,7 @@ Basic example using emotibit.signal.periodizer to transform an aperiodic signal
 @author: consu
 """
 
-import py.emotibit.signal as ebsig
+import emotibit.signal as ebsig
 import pandas as pd
 import scipy.signal as scisig
 import matplotlib.pyplot as plt
