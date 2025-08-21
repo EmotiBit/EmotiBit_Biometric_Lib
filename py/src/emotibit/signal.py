@@ -11,9 +11,10 @@ import pandas as pd
 import scipy.signal as scisig
 
 
-def periodize(input_df, timestamp_col_name, fs, start_t = None, start_val = None, end_t = None):
+def periodize(input_df, data_col_name, timestamp_col_name, fs, start_t = None, start_val = None, end_t = None):
     """ Periodizes an aperiodic signal to the passed sampling frequency
     @param input_df data frame with data and timestamp columns
+    @param data_col_name column header of data values
     @param timestamp_col_name column header of timestamps
     @param target sampling rate of output dataframe
     @param start_t optional start time of the periodized output dataframe
@@ -32,7 +33,8 @@ def periodize(input_df, timestamp_col_name, fs, start_t = None, start_val = None
         end_t = input_df.loc[len(input_df) - 1][timestamp_col_name]
         
     timestamps = np.arange(start_t, end_t, 1/fs)
-    t_col = input_df.columns.get_loc(timestamp_col_name)
+    data_col = input_df.columns.get_loc(data_col_name)
+    time_col = input_df.columns.get_loc(timestamp_col_name)
     
     ind = 0
     # output_df = pd.DataFrame()
@@ -40,11 +42,11 @@ def periodize(input_df, timestamp_col_name, fs, start_t = None, start_val = None
     for t in timestamps:
         output_list.append(input_df.loc[ind].tolist())
         if (t >= input_df.loc[ind,timestamp_col_name]):
-            val = input_df.iloc[ind,-1]
+            val = input_df.iloc[ind,data_col]
             ind = min(ind + 1, len(input_df)-1)
         l_ind = len(output_list) - 1
-        output_list[l_ind][len(output_list[l_ind]) - 1] = val        
-        output_list[l_ind][t_col] = t
+        output_list[l_ind][data_col] = val        
+        output_list[l_ind][time_col] = t
     
     output_df = pd.DataFrame(output_list, columns = list(input_df.columns))
     return output_df

@@ -5,7 +5,7 @@
 1) Run `python -m venv venv` to create a virtual environment named `venv`
 1) Activate the virtual environment by running
     * Windows: `./venv/Scripts/activate`
-    * macOS/Linux: `source venv/Scripts/activate`
+    * macOS/Linux: `source venv/bin/activate`
 1) Install required packages by running `pip install -r requirements.txt`
 
 ## Checkout the [examples](./examples) folder to start working with the recorded data.

@@ -28,13 +28,13 @@ def resample(file_one_name,
         String name of the column containing the data in file one.
     @input file_one_time_col:
         String name of the column containing the timestamp data in file one.
-    @input fileTwoDataName:
+    @input file_two_name:
         String of the path to the second file.
         (The data you are assuming to be truth and testing against
         (independent variable))
     @input file_two_data_col:
         String name of the column containing the data in file two.
-    @input file_two_timestamp_column:
+    @input file_two_timestamp_col:
         String name of the column containing the timestamp data in file two.
     @input desired_frequency:
         OPTIONAL: int of the desired frequency to resample to,
@@ -90,12 +90,14 @@ def resample(file_one_name,
     # then we are able to compare them and generate
     # some metrics for how close they are.
     resampled_one = ebsig.periodize(file_one_trimmed,
+                                    file_one_data_col,
                                     file_one_timestamp_col,
                                     desired_frequency,
                                     start_t=start_time,
                                     start_val=file_one_trimmed[file_one_data_col].iloc[0],
                                     end_t=end_time)
     resampled_two = ebsig.periodize(file_two_trimmed,
+                                    file_two_data_col,
                                     file_two_timestamp_col,
                                     desired_frequency,
                                     start_t=start_time,
