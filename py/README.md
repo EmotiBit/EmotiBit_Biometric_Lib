@@ -7,6 +7,7 @@
     * Windows: `./venv/Scripts/activate`
     * macOS/Linux: `source venv/bin/activate`
 1) Install required packages by running `pip install -r requirements.txt`
+1) Install the `emotibit` package by running `pip install -e emotibit` while in the `py` directory
 
 ## Checkout the [examples](./examples) folder to start working with the recorded data.
 **Note:** Before running any example, make sure that the `venv` has been activated so that the `emotibit` package and other dependencies can be found
