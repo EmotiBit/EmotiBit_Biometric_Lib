@@ -160,17 +160,17 @@ def score(dependent_data,
                                  independent_data[independent_data_column])
 
     # Scatter plot to show linear regression line
-    scatter_plot(dependent_data[dependent_data_column],
-                  independent_data[independent_data_column],
-                  slope,
-                  intercept,
-                  r,
-                  rho,
-                  tau,
-                  plot_base_name,
-                  data_label,
-                  dependent_name,
-                  independent_name)
+    scatter_plot(independent_data[independent_data_column],
+                 dependent_data[dependent_data_column],
+                 slope,
+                 intercept,
+                 r,
+                 rho,
+                 tau,
+                 plot_base_name,
+                 data_label,
+                 independent_name,
+                 dependent_name)
     
     # Bland-Altman mean difference plot to visualize the agreement between the two data sources
     mean_diff_plot(
@@ -245,7 +245,7 @@ def scatter_plot(data_one,
     plt.scatter(data_one, data_two, s=0.5)
     plt.xlabel(name_one, fontsize=7)
     plt.ylabel(name_two, fontsize=7)
-    plt.title(name_one + " vs. " + name_two + " " + data_label + ", with Regression Line",
+    plt.title(name_two + " vs. " + name_one + " " + data_label + ", with Regression Line",
               fontsize=7)
     plt.text(min(data_one),
              max(data_two),
@@ -280,31 +280,27 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-p1",
                         "--path_one",
-                        action="store",
                         type=str,
-                        nargs=1,
+                        required=True,
                         help="""Path to the file containing data
                          for source one. This should be the
                          dependent source (the one you are testing).""")
     parser.add_argument("-t1",
                         "--timestamp_one",
-                        action="store",
                         type=str,
-                        nargs=1,
+                        required=True,
                         help="""Name of the column in source
                         one that contains the timestamps.""")
     parser.add_argument("-d1",
                         "--data_one",
-                        action="store",
                         type=str,
-                        nargs=1,
+                        required=True,
                         help="""Name of the column in source
                           one that contains the HR data.""")
     parser.add_argument("-p2",
                         "--path_two",
-                        action="store",
                         type=str,
-                        nargs=1,
+                        required=True,
                         help="""Path to the file containing data
                          for source two.
                          This should be the indpendent source
@@ -312,31 +308,27 @@ def main():
                          what you are testing against).""")
     parser.add_argument("-t2",
                         "--timestamp_two",
-                        action="store",
                         type=str,
-                        nargs=1,
+                        required=True,
                         help="""Name of the column in source two
                           that contains the timestamps.""")
     parser.add_argument("-d2",
                         "--data_two",
-                        action="store",
                         type=str,
-                        nargs=1,
+                        required=True,
                         help="""Name of the column in source
                           two that contains the HR data.""")
     parser.add_argument("-f",
                         "--frequency",
-                        action="store",
                         type=int,
-                        nargs=1,
+                        required=True,
                         help="""Frequency of device with lower frequency.
                          (e.g. if source one is 250hz and source two is 125hz,
                          set this to 125).""")
     parser.add_argument("-o",
                         "--output",
-                        action="store",
                         type=str,
-                        nargs=1,
+                        required=True,
                         help="""Name for the outputs.
                           Name will be used to generate a plot output
                           such as <provided-name>-scatter.png.""")
@@ -361,16 +353,16 @@ def main():
   
     args = parser.parse_args()
 
-    file_one = args.path_one[0]
-    time_col_one = args.timestamp_one[0]
-    data_col_one = args.data_one[0]
+    file_one = args.path_one
+    time_col_one = args.timestamp_one
+    data_col_one = args.data_one
 
-    file_two = args.path_two[0]
-    time_col_two = args.timestamp_two[0]
-    data_col_two = args.data_two[0]
+    file_two = args.path_two
+    time_col_two = args.timestamp_two
+    data_col_two = args.data_two
 
-    plot_base_name = args.output[0]
-    frequency = args.frequency[0]
+    plot_base_name = args.output
+    frequency = args.frequency
     name_one = "Source One"
     if args.name_one is not None:
         name_one = args.name_one

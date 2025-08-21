@@ -1,25 +1,15 @@
 # Welcome to the EmotiBit Python Library
 
-## Setup Anaconda and Spyder
-* Setup Anaconda Python
-  * See these helpful instructions - https://medium.com/@Shreedharvellay/anaconda-jupyter-spyder-things-you-need-to-know-3c808d824739
-    * Briefly:
-      * Install Anaconda - https://www.anaconda.com/download/
-* Download or clone EmotiBit_Biometric_Lib to your computer
-* Open Anaconda Navigator
-* Import EmotiBit_Biometric_Lib/py/EmotiBit-pyenv.yml into Anaconda Navigator Environments
-  * <img src="https://github.com/EmotiBit/EmotiBit_Biometric_Lib/assets/537062/5ff71b46-17c7-4fd8-87eb-0e92b0cedd2f" width="300">
-* Use `conda develop py` while in EmotiBit_Biometric_Lib directory to add the `py` directory to path
+## Setup Python virtual environment
+1) `cd` into the `py` directory under the root directory
+1) Run `python -m venv venv` to create a virtual environment named `venv`
+1) Activate the virtual environment by running
+    * Windows: `./venv/Scripts/activate`
+    * macOS/Linux: `source venv/Scripts/activate`
+1) Install required packages by running `pip install -r requirements.txt`
 
 ## Checkout the [examples](./examples) folder to start working with the recorded data.
-For example, to run `scorer_example.py`:
-1) Setup the Anaconda environment as [previously mentioned](#setup-anaconda-and-spyder)
-2) Open up Anaconda terminal (Command Prompt or Powershell)
-3) Activate the environment by running `conda activate EmotiBit-pyenv`
-4) `cd` to `examples/scorer_example`
-5) Unzip SampleDataForHRScorer.zip into the folder
-6) Run `python scorer_example.py`
-7) After the program has finished running, the terminal should show some statistics and there should be new plots in the directory.
+**Note:** Before running any example, make sure that the `venv` has been activated so that the `emotibit` package and other dependencies can be found
 
 ## Python Data Viewer
 The Python Data viewer is an interactive tool designed to visualize the data stored on the SD-Card from the EmotiBit.
