@@ -4,8 +4,8 @@ The Python DataViewer is a tool developed to help visualize the data captured on
 
 ## Getting Started
 ### Requirements
-- Ensure that `venv` has been properly setup according to the instructions in the `py` directory README
-- Ensure that `venv` has been activated in the current terminal window
+1) Make sure that the `emotibit-env` Python virutal environment is activated
+    - Follow the instructions [here](../../README.md) to setup `emotibit-env` if you have not done so already
 - Put all parsed EmotiBit data files in a directory. The path to the directory and the file basename will be passed to `dataviewer_example.py`
 
 ### Steps to load data
@@ -14,9 +14,10 @@ The Python DataViewer is a tool developed to help visualize the data captured on
   - ![][Example-dataDirectory]
   - Then the command would be `python dataviewer_example.py -p "C:\Users\cfl\Documents\EmotiBit\DataAnalysis\exampleData" -n "2021-04-26_16-59-17-085213"`
 - A plot showing all the data from the EmotiBit should now be shown
-  - The example also accepts two additional command line arguments:
-    - `-u` if passed, will lead to green lines to display where there are user notes
-    - `-t` is followed by space separated tag names (ex. EA, PI, PR). If a tag name follows `-t`, then DC markers (instances where the sensor data goes out of bounds) will not be plotted for that data tag
+
+### Command Line Options
+  - `-u` if passed, will lead to green lines to display where there are user notes
+  - `-t` is followed by space separated tag names (ex. EA, PI, PR). If a tag name follows `-t`, then DC markers (instances where the sensor data goes out of bounds) will not be plotted for that data tag
 
 [EmotiBit-PythonDataViewer]: ../../../assets/PythonDataViewer.jpg "EmotiBit-PythonDataViewer"
 [Example-dataDirectory]: ../../../assets/Example-dataDirectory.png "Example-dataDirectory"

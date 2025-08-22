@@ -17,32 +17,38 @@ To do this, the script will resample both files at the given rate and then will 
 
 ## Quickstart Usage
 ### Using `scorer_example.py`
-1) Activate the EmotiBit-pyenv environment
-    - Follow the instructions [here](https://github.com/EmotiBit/EmotiBit_Biometric_Lib/tree/master/py) to setup Anaconda if you have not done so already
-2) Unzip the .zip file in the `scorer_example` directory
-3) If not there already, move the `.csv` files from the `.zip` file into the `scorer_example` directory
+1) Make sure that the `emotibit-env` Python virutal environment is activated
+    - Follow the instructions [here](../../README.md) to setup `emotibit-env` if you have not done so already
+1) Unzip the .zip file in the `scorer_example` directory
+1) If not there already, move the `.csv` files from the `.zip` file into the `scorer_example` directory. The file structure should look like the following:
+```text
+scorer_example/
+├── ebhr6_HR_trim.csv
+├── ecgHR6.csv
+├── README.md
+├── scorer_example.py
+└── ...
+```
 4) Run `python scorer_example.py` while in the `scorer_example` directory
 
 ### Using CLI
 `scorer.py` can also be run from command line. The steps on how to do so using the HR data is below.
-1) Activate the EmotiBit-pyenv environment
-2) Unzip the .zip file in the `scorer_example` directory
-3) If not there already, move the `.csv` files from the `.zip` file into the `scorer_example` directory
-4) Run ```python ../../emotibit/scorer.py -p1 ebhr6_HR_trim.csv -t1 LocalTimestamp -d1 HR -p2 ecgHR6.csv -t2 Timestamp -d2 HR -f 100 -n1 EmotiBit -n2 Cyton -o cyton -l HR```
+1) Follow steps 1-3 from [above](#using-scorer_examplepy)
+1) While in the `scorer_example` directory, run ```python ../../emotibit/scorer.py -p1 ebhr6_HR_trim.csv -t1 LocalTimestamp -d1 HR -p2 ecgHR6.csv -t2 Timestamp -d2 HR -f 100 -n1 EmotiBit -n2 Cyton -o cyton -l HR```
     - Update the path to `scorer.py` or either of the data files if needed
 
 #### Explanation of Arguments in Example:
-- p1: Provides the path to the file of the signal that is being considered the dependent variable in the analysis.
-- t1: Provides the column name in the first file that contains the timestamps of the data.
-- d1: Provides the column name in the first file that contains the data.
-- p2: Provides the path to the file of the signal that is being considred the independent vairable in the analysis.
-- t2: Provides the column name in the second file the contains the timestamps of the data.
-- d2: Provides the name of the column in the second file the contains all of the data.
-- f: Provides the frequency to resample to (in hertz).
-- n1: Provides a name for the dependent variable.
-- n2: Provides a name for the independent variable.
-- o: Provides the plot base name that will be used when saving the images of the plots.
-- l: Label for the data being plotted.
+- `p1`: Provides the path to the file of the signal that is being considered the dependent variable in the analysis.
+- `t1`: Provides the column name in the first file that contains the timestamps of the data.
+- `d1`: Provides the column name in the first file that contains the data.
+- `p2`: Provides the path to the file of the signal that is being considred the independent vairable in the analysis.
+- `t2`: Provides the column name in the second file the contains the timestamps of the data.
+- `d2`: Provides the name of the column in the second file the contains all of the data.
+- `f`: Provides the frequency to resample to (in hertz).
+- `n1`: Provides a name for the dependent variable.
+- `n2`: Provides a name for the independent variable.
+- `o`: Provides the plot base name that will be used when saving the images of the plots.
+- `l`: Label for the data being plotted.
 
 ### Format of Files
 The scorer requires that two files are provided. The files must conform to these requirements:
