@@ -1,7 +1,7 @@
 # Scorer_Full_Experiment_Example
-This repository contains several different scripts for working with biometric signals from EmotiBit (and other devices) to create derivative metrics and to compare signals to each other to see how similar they are.
+The Biometric Lib repository contains several different scripts for working with biometric signals from EmotiBit (and other devices) to create derivative metrics and to compare signals to each other to see how similar they are.
 
-This README describes the full process of conducting an experiment between two devices all the way to scoring how similar the heart rate readings from the devices are to each other.
+This README describes the full process of conducting an experiment between two devices all the way to scoring how similar the heart rate readings (as an example) from the devices are to each other.
 
 ## The Bigger Picture
 ### What are we trying to do?
