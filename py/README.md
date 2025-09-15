@@ -5,7 +5,7 @@
 1) Run `python -m venv emotibit-env` to create a virtual environment named `emotibit-env`
 1) Activate the virtual environment by running
     * Windows: `.\venv\Scripts\activate`
-    * macOS/Linux: `source venv/bin/activate`
+    * macOS/Linux: `source emotibit-env/bin/activate`
 1) The terminal should now start with `(emotibit-env)` followed by path to current working directory (ex. `(emotibit-env) C:\Users\username\Documents\...`)
 1) Install required packages by running `pip install -r requirements.txt`
 1) Install the `emotibit` package by running `pip install -e .` while in the `py` directory
