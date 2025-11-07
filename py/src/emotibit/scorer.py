@@ -3,6 +3,7 @@ import pandas as pd
 import emotibit.signal as ebsig
 import matplotlib.pyplot as plt
 import scipy.stats as scistats
+import statsmodels.api as sm
 import argparse
 
 try:
@@ -13,25 +14,27 @@ except AttributeError:
 
 
 def resample(file_one_name,
-             file_one_time_col,
+             file_one_timestamp_col,
+             file_one_data_col,
              file_two_name,
-             file_two_timestamp_column,
+             file_two_timestamp_col,
+             file_two_data_col,
              desired_frequency=100):
     """
     @input file_one_name:
         String of the path to the first tile. (The data you are testing
         (dependent variable))
-    @input fileOneDataColumn:
-        String name of the column containing the HR data in file one.
+    @input file_one_data_col:
+        String name of the column containing the data in file one.
     @input file_one_time_col:
         String name of the column containing the timestamp data in file one.
-    @input fileTwoDataName:
+    @input file_two_name:
         String of the path to the second file.
         (The data you are assuming to be truth and testing against
         (independent variable))
-    @input fileTwoDataColumn:
-        String name of the column containing the HR data in file two.
-    @input file_two_timestamp_column:
+    @input file_two_data_col:
+        String name of the column containing the data in file two.
+    @input file_two_timestamp_col:
         String name of the column containing the timestamp data in file two.
     @input desired_frequency:
         OPTIONAL: int of the desired frequency to resample to,
@@ -47,19 +50,31 @@ def resample(file_one_name,
     file_one = pd.read_csv(file_one_name)
     file_two = pd.read_csv(file_two_name)
 
-    # Trim file two so that it matches the size of file one.
-    # Works on the assumption that file one is shorter,
-    # otherwise there will be unmatched data.
-    file_two_trimmed = file_two.loc[
-        (file_two[file_two_timestamp_column]
-         >= file_one[file_one_time_col][0])
-        & (file_two[file_two_timestamp_column]
-           <= file_one[file_one_time_col].iloc[-1])]
-    file_two_trimmed = file_two_trimmed.reset_index(drop=True)
+    # Find the overlapping time range between two files
+    start_time = max(file_one[file_one_timestamp_col].iloc[0], file_two[file_two_timestamp_col].iloc[0])
+    end_time = min(file_one[file_one_timestamp_col].iloc[-1], file_two[file_two_timestamp_col].iloc[-1])
 
-    # We are resampling the HR data to desired frequency,
+    if start_time >= end_time:
+      raise ValueError("No overlapping time range between the two files. Check timestamp columns and time units.")
+
+    # Trim file_one to the overlap
+    file_one_trimmed = file_one.loc[
+        (file_one[file_one_timestamp_col] >= start_time) &
+        (file_one[file_one_timestamp_col] <= end_time)
+    ].reset_index(drop=True)
+
+    # Trim file_two to the overlap
+    file_two_trimmed = file_two.loc[
+        (file_two[file_two_timestamp_col] >= start_time) &
+        (file_two[file_two_timestamp_col] <= end_time)
+    ].reset_index(drop=True)
+
+    if file_one_trimmed.empty or file_two_trimmed.empty:
+      raise ValueError("After trimming to the overlapping time range, one or both dataframes are empty.")
+
+    # We are resampling the data to desired frequency,
     # this has some implications:
-    # HR doesn't really have frequency in quite the same way
+    # For heart rate, HR doesn't really have frequency in quite the same way
     # as other measurements, since it is derivative.
     # This means that we are oversampling all of the data,
     # and that also introduces some bias:
@@ -74,59 +89,56 @@ def resample(file_one_name,
     # If we have the same number of samples and they are perfectly lined up,
     # then we are able to compare them and generate
     # some metrics for how close they are.
-    resampled_one = ebsig.periodize(file_one,
-                                    file_one_time_col,
+    resampled_one = ebsig.periodize(file_one_trimmed,
+                                    file_one_data_col,
+                                    file_one_timestamp_col,
                                     desired_frequency,
-                                    start_t=file_one[file_one_time_col][0],
-                                    end_t=file_one[file_one_time_col].iloc[-1])
+                                    start_t=start_time,
+                                    start_val=file_one_trimmed[file_one_data_col].iloc[0],
+                                    end_t=end_time)
     resampled_two = ebsig.periodize(file_two_trimmed,
-                                    file_two_timestamp_column,
+                                    file_two_data_col,
+                                    file_two_timestamp_col,
                                     desired_frequency,
-                                    start_t=file_one[file_one_time_col][0],
-                                    end_t=file_one[file_one_time_col].iloc[-1])
-
-    # It is possible that file two has been left with some NAs in the beginning
-    # this fixes those.
-    file_two_early_part = file_two[file_two[file_two_timestamp_column]
-                                   < file_one[file_one_time_col][0]]
-    # Gets the last HR before the start of file one.
-    fill_in_hr = file_two_early_part["HR"].iloc[-1]
-    # Fills in the missing values with that value.
-    resampled_two = resampled_two.fillna(fill_in_hr)
-
+                                    start_t=start_time,
+                                    start_val=file_two_trimmed[file_two_data_col].iloc[0],
+                                    end_t=end_time)
+    
     return resampled_one, resampled_two
 
 
-def score(data_one,
-          data_one_column,
-          data_two,
-          data_two_column,
+def score(dependent_data,
+          dependent_data_column,
+          independent_data,
+          independent_data_column,
           plot_base_name,
-          name_one="Source One",
-          name_two="Source Two"):
+          dependent_name="Dependent Source",
+          independent_name="Independent Source",
+          data_label="Data"):
     """
-    @input data_one:
+    @input dependent_data:
         df of the first set of data (the data you are testing)
-    @input data_one_column:
+    @input dependent_data_column:
         string name of the column of interest in data_one
-    @input data_two:
+    @input independent_data:
         df of the second set of data
         (the data you are assuming to be the "truth"/independent variable)
-    @input dataTwoColmn:
+    @input independent_data_column:
         string name of the column of interset in data_two
 
     @info: df One and df Two should already be resampled so
         that they have the same sampling rate and identical timestamps
 
-    @output: The statistics from the comparison
+    @output: The statistics from the comparison and saves plots to the current directory
     """
 
-    if plot_base_name is not None:
-        plot_both_hrs(data_one[data_one_column],
-                      data_two[data_two_column],
-                      plot_base_name,
-                      name_one,
-                      name_two)
+    # Plot two data sources along temporal axis
+    plot_both(dependent_data[dependent_data_column],
+                  independent_data[independent_data_column],
+                  plot_base_name,
+                  data_label,
+                  dependent_name,
+                  independent_name)
     # We use this simple linear regression to get some stats,
     # mainly interested in r, the correlation between the two
     # note that because the relationship is not necessarily linear,
@@ -136,66 +148,78 @@ def score(data_one,
      intercept,
      r,
      p,
-     std_err) = scistats.linregress(data_two[data_two_column],
-                                    data_one[data_one_column])
+     std_err) = scistats.linregress(independent_data[independent_data_column],
+                                    dependent_data[dependent_data_column])
     # We choose to use spearman's rank correlation since
     # it can help us to understand if they are well correlated,
     # even if the distribution is non-parametric.
-    spearman_r = scistats.spearmanr(data_two[data_two_column],
-                                    data_one[data_one_column])
+    spearman_r = scistats.spearmanr(dependent_data[dependent_data_column],
+                                    independent_data[independent_data_column])
     rho = spearman_r[0]
     # We also decided to report the kendall rank correlation coefficient.
     # Another way of looking at how well the two signals are correlated.
-    tau, _ = scistats.kendalltau(data_two[data_two_column],
-                                 data_one[data_one_column])
+    tau, _ = scistats.kendalltau(dependent_data[dependent_data_column],
+                                 independent_data[independent_data_column])
 
-    if plot_base_name is not None:
-        scatter_plot(data_one[data_one_column],
-                     data_two[data_two_column],
-                     slope,
-                     intercept,
-                     r,
-                     rho,
-                     tau,
-                     plot_base_name,
-                     name_one,
-                     name_two)
-
-    return slope, intercept, r, rho, tau, p, std_err
-
-
-def plot_both_hrs(data_one_hr,
-                  data_two_hr,
-                  plot_base_name,
-                  name_one="Source One",
-                  name_two="Source Two"):
-    """
-    @input: data_one_hr: series of data containing the HR for data one
-    @input: data_two_hr: series of data containing the HR for data two
-    @input: name_one: OPTIONAL: name for data one, defaults to 'Source One'
-    @input: name_two: OPTIONAL: name for data two, defaults to 'Source Two'
-    """
-
-    plt.clf()
-    plt.rcParams.update(plt.rcParamsDefault)
-    plt.figure(figsize=(8, 6))
-    plt.plot(data_one_hr, label=name_one)
-    plt.plot(data_two_hr, label=name_two)
-    plt.legend(loc="upper left")
-    plt.xlabel("Time")
-    plt.ylabel("HR")
-    plt.title(name_one + " and " + name_two + " HR")
-    plt.savefig(plot_base_name + "_resampletest.png", dpi=600)
-
-
-def scatter_plot(data_one_hr,
-                 data_two_hr,
+    # Scatter plot to show linear regression line
+    scatter_plot(independent_data[independent_data_column],
+                 dependent_data[dependent_data_column],
                  slope,
                  intercept,
                  r,
                  rho,
                  tau,
                  plot_base_name,
+                 data_label,
+                 independent_name,
+                 dependent_name)
+    
+    # Bland-Altman mean difference plot to visualize the agreement between the two data sources
+    mean_diff_plot(
+      dependent_data[dependent_data_column], 
+      independent_data[independent_data_column],
+      plot_base_name,
+      data_label,
+      dependent_name,
+      independent_name
+    )
+
+    return slope, intercept, r, rho, tau, p, std_err
+
+
+def plot_both(data_one,
+              data_two,
+              plot_base_name,
+              data_label,
+              name_one="Source One",
+              name_two="Source Two"):
+    """
+    @input: data_one_hr: series of data for data one
+    @input: data_two_hr: series of data for data two
+    @input: name_one: OPTIONAL: name for data one, defaults to 'Source One'
+    @input: name_two: OPTIONAL: name for data two, defaults to 'Source Two'
+    """
+
+    plt.clf()
+    plt.rcParams.update(plt.rcParamsDefault)
+    plt.figure(figsize=(5, 4))
+    plt.plot(data_one, label=name_one)
+    plt.plot(data_two, label=name_two)
+    plt.legend(loc="upper left")
+    plt.xlabel("Time")
+    plt.ylabel(data_label)
+    plt.title(name_one + " and " + name_two + " " + data_label)
+    plt.savefig(plot_base_name + "_resampled.png", dpi=500, bbox_inches='tight')
+
+def scatter_plot(data_one,
+                 data_two,
+                 slope,
+                 intercept,
+                 r,
+                 rho,
+                 tau,
+                 plot_base_name,
+                 data_label,
                  name_one="Source One",
                  name_two="Source Two"):
     """
@@ -219,84 +243,97 @@ def scatter_plot(data_one_hr,
     plt.rc('xtick', labelsize=3.5)
     plt.rc('ytick', labelsize=3.5)
     plt.rc('axes', linewidth=0.5)
-    plt.figure(figsize=(3.3, 3.3))
-    plt.scatter(data_two_hr, data_one_hr, s=0.5)
-    plt.xlabel(name_two, fontsize=7)
-    plt.ylabel(name_one, fontsize=7)
-    plt.title(name_two + " vs. " + name_one + " HR, with Regression Line",
+    plt.figure(figsize=(5, 5))
+    plt.scatter(data_one, data_two, s=0.5)
+    plt.xlabel(name_one, fontsize=7)
+    plt.ylabel(name_two, fontsize=7)
+    plt.title(name_two + " vs. " + name_one + " " + data_label + ", with Regression Line",
               fontsize=7)
-    plt.text(min(data_two_hr),
-             max(data_one_hr) - 39,
+    plt.text(min(data_one),
+             max(data_two),
              f"Slope: {slope:.4f}\nIntercept: {intercept:.4f}"
              f"\nr: {r:.4f}\nrho: {rho:.4f}\ntau: {tau:.4f}",
-             fontsize=5)
+             fontsize=8,
+             verticalalignment='top',)
 
     def slope_line(x):
         return slope * x + intercept
-    this_slope_line = list(map(slope_line, data_two_hr))
+    this_slope_line = list(map(slope_line, data_one))
 
-    plt.plot(data_two_hr, this_slope_line, color="magenta", linewidth=0.5)
+    plt.plot(data_one, this_slope_line, color="magenta", linewidth=0.5)
     plt.tick_params(axis="both", which="major", labelsize=7)
-    plt.savefig(plot_base_name + "_scatter.png", dpi=200)
+    plt.savefig(plot_base_name + "_scatter.png", dpi=500, bbox_inches='tight')
     plt.rcParams.update(plt.rcParamsDefault)
 
+def mean_diff_plot(data_one,
+              data_two,
+              plot_base_name,
+              data_label,
+              name_one="Source One",
+              name_two="Source Two"):
+    plt.clf()
+    plt.figure(figsize=(5, 5))
+    sm.graphics.mean_diff_plot(data_one, data_two)
+    plt.title(name_one + " vs. " + name_two + " - " + data_label + " Mean Difference Plot")
+    plt.ylabel(name_one + " - " + name_two)
+    plt.savefig(plot_base_name + "_mean-diff.png", dpi=500, bbox_inches='tight')
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-hr1",
-                        "--heartRateOne",
-                        action="store",
+    parser.add_argument("-p1",
+                        "--path_one",
                         type=str,
-                        nargs=1,
-                        help="""Path to the file containing HR data
+                        required=True,
+                        help="""Path to the file containing data
                          for source one. This should be the
                          dependent source (the one you are testing).""")
     parser.add_argument("-t1",
-                        "--timestampOne",
-                        action="store",
+                        "--timestamp_one",
                         type=str,
-                        nargs=1,
+                        required=True,
                         help="""Name of the column in source
                         one that contains the timestamps.""")
     parser.add_argument("-d1",
                         "--data_one",
-                        action="store",
                         type=str,
-                        nargs=1,
+                        required=True,
                         help="""Name of the column in source
                           one that contains the HR data.""")
-    parser.add_argument("-hr2",
-                        "--heartRateTwo",
-                        action="store",
+    parser.add_argument("-p2",
+                        "--path_two",
                         type=str,
-                        nargs=1,
-                        help="""Path to the file containing HR data
+                        required=True,
+                        help="""Path to the file containing data
                          for source two.
                          This should be the indpendent source
                          (Your source of truth,
                          what you are testing against).""")
     parser.add_argument("-t2",
-                        "--timestampTwo",
-                        action="store",
+                        "--timestamp_two",
                         type=str,
-                        nargs=1,
+                        required=True,
                         help="""Name of the column in source two
                           that contains the timestamps.""")
     parser.add_argument("-d2",
                         "--data_two",
-                        action="store",
                         type=str,
-                        nargs=1,
+                        required=True,
                         help="""Name of the column in source
                           two that contains the HR data.""")
     parser.add_argument("-f",
                         "--frequency",
-                        action="store",
                         type=int,
-                        nargs=1,
+                        required=True,
                         help="""Frequency of device with lower frequency.
                          (e.g. if source one is 250hz and source two is 125hz,
                          set this to 125).""")
+    parser.add_argument("-o",
+                        "--output",
+                        type=str,
+                        required=True,
+                        help="""Name for the outputs.
+                          Name will be used to generate a plot output
+                          such as <provided-name>-scatter.png.""")
     parser.add_argument("-n1",
                         "--name_one",
                         action="store",
@@ -309,42 +346,42 @@ def main():
                         type=str,
                         nargs="?",
                         help="OPTIONAL: Name for source two, used in plots.")
-    parser.add_argument("-o",
-                        "--output",
+    parser.add_argument("-l",
+                        "--data_label",
                         action="store",
                         type=str,
                         nargs="?",
-                        help="""OPTIONAL: Name for the outputs.
-                          Name will be used to generate a plot output
-                          such as <provided-name>-scatter.png and
-                          <provided-name>-resampledHR.png.
-                          If no name is provided, plots are not written""")
+                        help="OPTIONAL: Label for the data.")
+  
     args = parser.parse_args()
 
-    file_one = args.heartRateOne[0]
-    time_col_one = args.timestampOne[0]
-    data_col_one = args.data_one[0]
+    file_one = args.path_one
+    time_col_one = args.timestamp_one
+    data_col_one = args.data_one
 
-    file_two = args.heartRateTwo[0]
-    time_col_two = args.timestampTwo[0]
-    data_col_two = args.data_two[0]
+    file_two = args.path_two
+    time_col_two = args.timestamp_two
+    data_col_two = args.data_two
 
-    frequency = args.frequency[0]
+    plot_base_name = args.output
+    frequency = args.frequency
     name_one = "Source One"
     if args.name_one is not None:
         name_one = args.name_one
     name_two = "Source Two"
     if args.name_two is not None:
         name_two = args.name_two
-    plot_base_name = None
-    if args.output is not None:
-        plot_base_name = args.output
+    data_label = "Data"
+    if args.data_label is not None:
+        data_label = args.data_label
 
     print("===== BEGINNING RESAMPLING to " + str(frequency) + " hz =====")
     data_one, data_two = resample(file_one,
                                   time_col_one,
+                                  data_col_one,
                                   file_two,
                                   time_col_two,
+                                  data_col_two,
                                   frequency)
     print("===== FINISHED RESAMPLING =====")
     print("===== BEGINNING SCORING =====")
@@ -354,7 +391,8 @@ def main():
                                                       data_col_two,
                                                       plot_base_name,
                                                       name_one,
-                                                      name_two)
+                                                      name_two,
+                                                      data_label)
     print("===== FINISHED SCORING =====")
     print("\nSLOPE: ", slope)
     print("INTERCEPT: ", intercept)
