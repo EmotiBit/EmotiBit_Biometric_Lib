@@ -2,7 +2,7 @@
 
 ## Setup Python virtual environment
 1) `cd` into the `py` directory under the root directory
-1) Run `python -m venv emotibit-env` to create a virtual environment named `emotibit-env`
+1) Run `python -m venv emotibit-env` to create a virtual environment named `emotibit-env`. Note that some requirements have a minimum python version. We recommend using python 3.12+. Environment creation and requirements were tested using python 3.12.12.
 1) Activate the virtual environment by running
     * Windows: `.\venv\Scripts\activate`
     * macOS/Linux: `source emotibit-env/bin/activate`
